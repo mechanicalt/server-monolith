@@ -1,0 +1,11 @@
+[libs]
+flow-typed
+[ignore]
+.*/kefir/.*
+.*bcryptjs/src/bower.json
+[options]
+module.name_mapper='^hapi-utils' -> 'menternship-utils-hapi'
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
+module.file_ext=.js
+module.file_ext=.json
