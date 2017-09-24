@@ -19,6 +19,11 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.78.0",
+    "babel-core": "^6.24.0",
+    "babel-eslint": "^7.1.1",
+    "babel-plugin-module-resolver": "^2.5.0",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-stage-0": "^6.22.0",
     "babel-cli": "^6.24.1",
     "babel-plugin-module-resolver": "^2.7.1",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
@@ -53,11 +58,6 @@
     "vision": "^4.1.1"
   },
   "devDependencies": {
-    "babel-core": "^6.24.0",
-    "babel-eslint": "^7.1.1",
-    "babel-plugin-module-resolver": "^2.5.0",
-    "babel-preset-es2015": "^6.24.0",
-    "babel-preset-stage-0": "^6.22.0",
     "eslint": "^3.18.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-babel": "^4.1.1",
