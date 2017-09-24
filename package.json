@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && npm run start-server",
+    "start": "npm run migrate up && npm run build && npm run start-server",
     "start-server": "rejoice -r dotenv/config -p ./ -c ./dist/manifest.js",
     "debug": "node --inspect=5858 node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./src/manifest.js -r babel-core/register",
     "ui-test": "PG_DATABASE=process_test node --inspect=5858 node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./src/manifest.js -r babel-core/register",
