@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import controller from 'hapi-utils/controllers';
 import flash from 'hapi-utils/flash';
 import joi from 'joi';
-import * as rpc from '../rpc/users';
+import * as rpc from 'rpc/users/emails';
 import * as services from '../services/users';
 import * as sessionServices from '../services/sessions';
 

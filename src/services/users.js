@@ -1,8 +1,8 @@
 // @flow
 import boom from 'boom';
-import User from '../models/User';
-import repo from '../repositories/users';
-import * as rpc from '../rpc/users';
+import User from 'models/User';
+import repo from 'repositories/users';
+import * as rpc from 'rpc/users/emails';
 import { create as createSession } from './sessions';
 
 export function doesEmailAlreadyExist(email: string) {

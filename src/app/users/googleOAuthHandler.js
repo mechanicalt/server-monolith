@@ -1,8 +1,8 @@
 // @flow
 import crypto from 'crypto';
-import oauthRepo from '../repositories/oauth';
-import usersRepo from '../repositories/users';
-import * as sessionServices from '../services/sessions';
+import oauthRepo from 'repositories/oauth';
+import usersRepo from 'repositories/users';
+import * as sessionServices from 'services/sessions';
 
 const oauthTypes = {
   google: 1,

@@ -1,8 +1,8 @@
 // @flow
 import joi from 'joi';
 import controller from 'hapi-utils/controllers';
-import { loginWithToken } from '../services/users';
-import { getTokenFromHeaders, getUserFromAuth } from '../utils';
+import { loginWithToken } from 'services/users';
+import { getTokenFromHeaders, getUserFromAuth } from 'utils/sessions';
 
 export function createHandler(request: Object, reply: Function) {
   const { email, loginToken } = request.payload;

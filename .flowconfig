@@ -5,6 +5,13 @@ flow-typed
 .*bcryptjs/src/bower.json
 [options]
 module.name_mapper='^hapi-utils' -> 'menternship-utils-hapi'
+module.name_mapper='^utils' -> '<PROJECT_ROOT>/src/utils'
+module.name_mapper='^controllers' -> '<PROJECT_ROOT>/src/controllers'
+module.name_mapper='^services' -> '<PROJECT_ROOT>/src/services'
+module.name_mapper='^repositories' -> '<PROJECT_ROOT>/src/repositories'
+module.name_mapper='^rpc' -> '<PROJECT_ROOT>/src/rpc'
+module.name_mapper='^models' -> '<PROJECT_ROOT>/src/models'
+module.name_mapper='^app' -> '<PROJECT_ROOT>/src/app'
 esproposal.class_static_fields=enable
 esproposal.class_instance_fields=enable
 module.file_ext=.js
