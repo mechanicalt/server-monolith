@@ -39,9 +39,12 @@ export function loginWithToken({ email, loginToken }: Object) {
   }));
 }
 
-export function getLoginToken(email) {
+export function getLoginToken(email: string) {
   return repo.retrieve({ email })
-  .then(user => {
+  .then((user) => {
+    if (!user) {
+      throw boom.badRequest();
+    }
     return rpc.getLoginToken(email, user.loginToken);
   });
 }
