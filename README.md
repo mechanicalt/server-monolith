@@ -29,3 +29,8 @@ npm run debug
 
 // For production mode 
 npm start
+
+## Documentation
+
+We use swagger for documentation
+*/documentation
