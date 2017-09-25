@@ -34,3 +34,7 @@ npm start
 
 We use swagger for documentation
 */documentation
+
+## Contributing
+
+For now, we'll be going off of a derivative of the gitflow protocol. Create a branch off of master, call it IS-{issue#}-a_descriptive_name, and then when it's ready, create a pull request for code review.
