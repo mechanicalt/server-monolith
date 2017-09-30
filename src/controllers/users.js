@@ -207,18 +207,6 @@ export const createUsername = {
   },
 };
 
-export const getGoogleAuthUrlHandler = (req: *, reply: *) => {
-  return reply(req.generate_google_oauth2_url());
-};
-
-const getGoogleAuthUrl = {
-  method: 'GET',
-  path: '/google_auth_url',
-  handler: getGoogleAuthUrlHandler,
-  config: {
-    auth: false,
-  },
-};
 
 export default controller('users', [
   create,
@@ -228,6 +216,5 @@ export default controller('users', [
   checkUsername,
   confirmEmail,
   createUsername,
-  getGoogleAuthUrl,
   loginToken,
 ]);

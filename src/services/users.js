@@ -1,5 +1,6 @@
 // @flow
 import boom from 'boom';
+import qs from 'qs';
 import User from 'models/User';
 import repo from 'repositories/users';
 import * as rpc from 'rpc/users/emails';
