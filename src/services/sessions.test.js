@@ -16,6 +16,6 @@ describe('services.sessions', () => {
     }).then((decoded)=>{
       expect(decoded.id).toEqual(user.id);
       return expect(decoded.username).toEqual(user.username);
-    })
+    });
   });
 });
