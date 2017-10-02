@@ -1,5 +1,7 @@
 # server-monolith
 
+http://api.menternship.org
+
 ## Technologies
 - [ ] hapijs
 - [ ] postgres
