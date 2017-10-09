@@ -2,7 +2,9 @@
 import * as c from './';
 
 jest.mock('hapi-utils/request', () => ({
-  getUser: () => 1,
+  getUser: () => {
+    return { id: 1 };
+  },
 }));
 
 jest.mock('repositories/projects', () => ({
