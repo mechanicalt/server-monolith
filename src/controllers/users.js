@@ -2,6 +2,7 @@
 import crypto from 'crypto';
 import controller from 'hapi-utils/controllers';
 import flash from 'hapi-utils/flash';
+import { createTransaction } from 'hapi-utils/repos';
 import joi from 'joi';
 import * as rpc from 'rpc/users/emails';
 import * as services from '../services/users';
@@ -9,25 +10,27 @@ import * as sessionServices from '../services/sessions';
 
 export function createHandler(request: *, reply: *) {
   const { email, username } = request.payload;
-  return Promise.all([
-    services.doesEmailAlreadyExist(email),
-    services.doesUsernameAlreadyExist(username),
-  ])
-  .then(() => {
-    const emailToken = crypto.randomBytes(20).toString('hex');
-    const loginToken = crypto.randomBytes(20).toString('hex');
-    return Promise.all([services.create({ username, email, loginToken, emailToken }), emailToken]);
-  })
-  .then(([id, emailToken]) => {
-    rpc.createUser({
-      username,
-      email,
-    }, `${process.env.BASE_URL}/${id}/confirm_email/${emailToken}`);
-    return sessionServices.create({ username, email, id })
-    .then((token) => {
-      reply({
-        user: { id },
-        session: token,
+  return createTransaction((t) => {
+    return Promise.all([
+      services.doesEmailAlreadyExist(email, t),
+      services.doesUsernameAlreadyExist(username, t),
+    ])
+    .then(() => {
+      const emailToken = crypto.randomBytes(20).toString('hex');
+      const loginToken = crypto.randomBytes(20).toString('hex');
+      return Promise.all([services.create({ username, email, loginToken, emailToken }, t), emailToken]);
+    })
+    .then(([id, emailToken]) => {
+      rpc.createUser({
+        username,
+        email,
+      }, `${process.env.BASE_URL}/${id}/confirm_email/${emailToken}`);
+      return sessionServices.create({ username, id })
+      .then((token) => {
+        reply({
+          user: { id },
+          session: token,
+        });
       });
     });
   })
