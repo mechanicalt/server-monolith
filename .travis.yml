@@ -8,4 +8,6 @@ cache:
    directories:
      - node_modules
 script:
+  - npm run test-migrate up
   - npm test
+  - npm run test-migrate down
