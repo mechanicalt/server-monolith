@@ -1,4 +1,8 @@
 language: node_js
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database menternship_test;' -U postgres
 matrix:
   include:
     - node_js: "6"
@@ -10,4 +14,3 @@ cache:
 script:
   - npm run test-migrate up
   - npm test
-  - npm run test-migrate down
