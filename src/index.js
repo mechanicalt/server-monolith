@@ -6,6 +6,7 @@ import sessions from 'controllers/sessions';
 import oauth from 'controllers/oauth';
 import projects from 'controllers/projects';
 import internships from 'controllers/internships';
+import techs from 'controllers/techs';
 import userPlugin from 'app/users';
 import 'rpcServers';
 
@@ -15,4 +16,5 @@ module.exports = getRegister([
   ...oauth,
   ...projects,
   ...internships,
+  ...techs,
 ], [getPlugin(process.env.RPC_CONNECTION), userPlugin]);
