@@ -9,7 +9,7 @@
     "debug": "node --inspect=5858 node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./src/manifest.js -r babel-core/register",
     "ui-test": "PG_DATABASE=process_test node --inspect=5858 node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./src/manifest.js -r babel-core/register",
     "lint": "eslint src",
-    "test": "NODE_ENV=TEST node -r dotenv/config node_modules/.bin/jest",
+    "test": "NODE_ENV=TEST node -r dotenv/config node_modules/.bin/jest --forceExit",
     "flow": "flow",
     "build": "babel src -d dist",
     "flowtyped": "flow-typed",
