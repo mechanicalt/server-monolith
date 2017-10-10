@@ -8,6 +8,8 @@ export function createHandler(request: *, reply: *) {
   const { name } = request.payload;
   return repo.insert({
     name,
+  }, {
+    justCreate: true,
   })
   .then(reply)
   .catch(reply);
