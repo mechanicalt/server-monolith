@@ -12,7 +12,6 @@ export function createHandler(request: *, reply: *) {
   return projectServices.doesUserOwnProject(userId, projectId)
   .then(() => {
     return repo.insert({
-      userId,
       projectId,
     });
   })
@@ -49,7 +48,31 @@ export const getByProject = {
   },
 };
 
+export function getHandler(request: *, reply: *) {
+  const { id } = request.params;
+  return repo.retrieve({
+    id,
+  })
+  .then(reply)
+  .catch(reply);
+}
+
+export const get = {
+  method: 'GET',
+  path: '/{id}',
+  handler: getHandler,
+  config: {
+    auth: false,
+    validate: {
+      params: {
+        id: joi.string().required(),
+      },
+    },
+  },
+};
+
 export default controller('internships', [
   create,
   getByProject,
+  get,
 ]);
