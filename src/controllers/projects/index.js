@@ -54,7 +54,31 @@ export const edit = {
   },
 };
 
+export function getHandler(request: *, reply: *) {
+  const { id } = request.params;
+  return repo.retrieve({
+    id,
+  })
+  .then(reply)
+  .catch(reply);
+}
+
+export const get = {
+  method: 'GET',
+  path: '/{id}',
+  handler: getHandler,
+  config: {
+    auth: false,
+    validate: {
+      params: {
+        id: joi.string().required(),
+      },
+    },
+  },
+};
+
 export default controller('projects', [
   create,
   edit,
+  get,
 ]);
