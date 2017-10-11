@@ -1,4 +1,5 @@
 // @flow
+import joi from 'joi';
 import controller from 'hapi-utils/controllers';
 import { getUser } from 'hapi-utils/request';
 import * as services from 'services/internships';
@@ -25,6 +26,30 @@ export const create = {
   handler: createHandler,
 };
 
+export function getByProjectHandler(request: *, reply: *) {
+  const { id } = request.params;
+  return repo.retrieveAll({
+    projectId: id,
+  })
+  .then(reply)
+  .catch(reply);
+}
+
+export const getByProject = {
+  method: 'GET',
+  path: '/by_project/{id}',
+  handler: getByProjectHandler,
+  config: {
+    auth: false,
+    validate: {
+      params: {
+        id: joi.string().required(),
+      },
+    },
+  },
+};
+
 export default controller('internships', [
   create,
+  getByProject,
 ]);
