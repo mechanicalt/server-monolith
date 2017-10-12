@@ -23,29 +23,25 @@ export const create = {
 export function editHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { id } = request.params;
-  const { name, description } = request.payload;
   return repo.update(
     {
       id,
       userId,
     },
-    {
-      name,
-      description,
-    })
+    request.payload)
   .then(reply)
   .catch(reply);
 }
 
 export const edit = {
-  method: 'POST',
+  method: 'PATCH',
   path: '/{id}',
   handler: editHandler,
   config: {
     validate: {
       payload: {
-        name: joi.string().required(),
-        description: joi.string().required(),
+        name: joi.string().optional(),
+        description: joi.string().optional(),
       },
       params: {
         id: joi.string().required(),
