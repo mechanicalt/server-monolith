@@ -73,8 +73,32 @@ export const get = {
   },
 };
 
+export function byUserHandler(request: *, reply: *) {
+  const { id } = request.params;
+  return repo.retrieveAll({
+    userId: id,
+  })
+  .then(reply)
+  .catch(reply);
+}
+
+export const byUser = {
+  method: 'GET',
+  path: '/by_user/{id}',
+  handler: byUserHandler,
+  config: {
+    auth: false,
+    validate: {
+      params: {
+        id: joi.string().required(),
+      },
+    },
+  },
+};
+
 export default controller('projects', [
   create,
   edit,
   get,
+  byUser,
 ]);
