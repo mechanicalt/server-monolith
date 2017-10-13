@@ -79,7 +79,16 @@ export const byUser = {
   method: 'GET',
   path: '/by_user/{id}',
   handler: byUserHandler,
-  
+  config: {
+    auth: false,
+    validate: {
+      params: {
+        id: joi.string().required(),
+      },
+    },
+  },
+};
+
 export function getByProjectHandler(request: *, reply: *) {
   const { id } = request.params;
   return repo.retrieveAll({
@@ -124,13 +133,10 @@ export const get = {
   },
 };
 
-
-
 export default controller('internships', [
   create,
   byUser,
   get,
   update,
   getByProject,
-  get,
 ]);
