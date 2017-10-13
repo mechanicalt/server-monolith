@@ -142,7 +142,7 @@ export function searchHandler(request: *, reply: *) {
 const search = {
   method: 'POST',
   path: '/search',
-  handler: getHandler,
+  handler: searchHandler,
   config: {
     auth: false,
     validate: {
