@@ -4,6 +4,7 @@ import controller from 'hapi-utils/controllers';
 import flash from 'hapi-utils/flash';
 import { createTransaction } from 'hapi-utils/repos';
 import joi from 'joi';
+import repo from 'repositories/users';
 import * as rpc from 'rpc/users/emails';
 import * as services from '../services/users';
 import * as sessionServices from '../services/sessions';
@@ -210,6 +211,25 @@ export const createUsername = {
   },
 };
 
+export function searchHandler(request: *, reply: *) {
+  return repo.search(request.payload.searchText)
+  .then(reply)
+  .catch(reply);
+}
+
+const search = {
+  method: 'POST',
+  path: '/search',
+  handler: searchHandler,
+  config: {
+    auth: false,
+    validate: {
+      payload: {
+        searchText: joi.string().required(),
+      },
+    },
+  },
+};
 
 export default controller('users', [
   create,
@@ -220,4 +240,5 @@ export default controller('users', [
   confirmEmail,
   createUsername,
   loginToken,
+  search,
 ]);

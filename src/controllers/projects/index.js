@@ -96,9 +96,30 @@ export const byUser = {
   },
 };
 
+export function searchHandler(request: *, reply: *) {
+  return repo.search(request.payload.searchText)
+  .then(reply)
+  .catch(reply);
+}
+
+const search = {
+  method: 'POST',
+  path: '/search',
+  handler: searchHandler,
+  config: {
+    auth: false,
+    validate: {
+      payload: {
+        searchText: joi.string().required(),
+      },
+    },
+  },
+};
+
 export default controller('projects', [
   create,
   edit,
   get,
   byUser,
+  search,
 ]);
