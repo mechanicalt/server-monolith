@@ -12,7 +12,6 @@ export function createHandler(request: *, reply: *) {
   return projectServices.doesUserOwnProject(userId, projectId)
   .then(() => {
     return repo.insert({
-      userId,
       projectId,
     });
   })
@@ -80,6 +79,20 @@ export const byUser = {
   method: 'GET',
   path: '/by_user/{id}',
   handler: byUserHandler,
+  
+export function getByProjectHandler(request: *, reply: *) {
+  const { id } = request.params;
+  return repo.retrieveAll({
+    projectId: id,
+  })
+  .then(reply)
+  .catch(reply);
+}
+
+export const getByProject = {
+  method: 'GET',
+  path: '/by_project/{id}',
+  handler: getByProjectHandler,
   config: {
     auth: false,
     validate: {
@@ -112,9 +125,12 @@ export const get = {
 };
 
 
+
 export default controller('internships', [
   create,
   byUser,
   get,
   update,
+  getByProject,
+  get,
 ]);
