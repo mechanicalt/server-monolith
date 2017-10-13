@@ -119,7 +119,7 @@ export function getHandler(request: *, reply: *) {
   .catch(reply);
 }
 
-export const get = {
+const get = {
   method: 'GET',
   path: '/{id}',
   handler: getHandler,
@@ -133,10 +133,32 @@ export const get = {
   },
 };
 
+export function searchHandler(request: *, reply: *) {
+  return repo.search(request.payload.searchText)
+  .then(reply)
+  .catch(reply);
+}
+
+const search = {
+  method: 'POST',
+  path: '/search',
+  handler: getHandler,
+  config: {
+    auth: false,
+    validate: {
+      payload: {
+        searchText: joi.string().required(),
+      },
+    },
+  },
+};
+
+
 export default controller('internships', [
   create,
   byUser,
   get,
   update,
   getByProject,
+  search,
 ]);
