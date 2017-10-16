@@ -8,6 +8,25 @@ import * as internshipServices from 'services/internships';
 import repo from 'repositories/applications';
 import { statusTypes } from 'models/Application';
 
+export function byInternshipHandler(request: *, reply: *) {
+  const { id: userId } = getUser(request);
+  const { id: internshipId } = request.params;
+  let results;
+  if (internshipServices.doesUserOwnInternship(userId, internshipId)) {
+    results = repo.retrieveAll({
+      internshipId,
+    });
+  } else {
+    results = repo.retrieveAll({
+      userId,
+      internshipId,
+    });
+  }
+  return results
+  .then(reply)
+  .catch(reply);
+}
+
 export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { internshipId } = request.payload;
@@ -26,7 +45,7 @@ export function createHandler(request: *, reply: *) {
     }),
     repo.retrieve({
       internshipId,
-      ['!status']: [statusTypes.PENDING, statusTypes.OFFERED],
+      status: [statusTypes.PENDING, statusTypes.OFFERED],
     }).then((application) => {
       if (application) {
         throw boom.badRequest('You have already applied for this internship');
@@ -56,6 +75,20 @@ export const create = {
   },
 };
 
+export const byInternship = {
+  method: 'POST',
+  path: '/by_internship/{id}',
+  handler: byInternshipHandler,
+  config: {
+    validate: {
+      params: {
+        id: joi.string().required(),
+      },
+    },
+  },
+};
+
 export default controller('applications', [
   create,
+  byInternship,
 ]);

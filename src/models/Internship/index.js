@@ -8,9 +8,10 @@ export default class Internship {
   id: number;
   name: string;
   description: string;
+  projectId: $$id;
   status: number;
   constructor(internship: Object = {}) {
-    ['id', 'name', 'description', 'status', 'createdAt'].forEach((key) => {
+    ['id', 'name', 'description', 'projectId', 'status', 'createdAt'].forEach((key) => {
       this[key] = internship[key];
     });
   }
