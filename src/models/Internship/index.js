@@ -1,0 +1,19 @@
+// @flow
+export const statusTypes = {
+  ACTIVE: 1,
+  INACTIVE: 2,
+};
+
+export default class Internship {
+  id: number;
+  name: string;
+  description: string;
+  status: number;
+  constructor(internship: Object = {}) {
+    ['id', 'name', 'description', 'status', 'createdAt'].forEach((key) => {
+      this[key] = internship[key];
+    });
+  }
+  isActive = () => this.status === statusTypes.ACTIVE
+}
+

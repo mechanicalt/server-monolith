@@ -1,10 +1,21 @@
 // @flow
 import Repo, { db, squel } from 'hapi-utils/repos';
+import Internship from 'models/Internship';
 
 class InternshipRepo extends Repo {
   byUser = () => {
     return this.retrieveAll();
   }
+  getInternshipUserId = (internshipId) => {
+    const query = squel.select()
+    .field('projects.user_id')
+    .from('internships')
+    .join('projects', null, 'projects.id = internships.project_id')
+    .where('internships.id = ?', internshipId);
+    const { text, values } = query.toParam();
+    return db.one(text, values).then(i => i.userId);
+  }
+
   search = (searchText: string) => {
     const querySearchText = searchText.toLowerCase().replace(/ /g, ' | ');
 
@@ -30,4 +41,4 @@ class InternshipRepo extends Repo {
   }
 }
 
-export default new InternshipRepo('internships');
+export default new InternshipRepo('internships', Internship);
