@@ -7,10 +7,12 @@ import oauth from 'controllers/oauth';
 import projects from 'controllers/projects';
 import internships from 'controllers/internships';
 import techs from 'controllers/techs';
+import applications from 'controllers/applications';
 import userPlugin from 'app/users';
 import 'rpcServers';
 
 module.exports = getRegister([
+  ...applications,
   ...users,
   ...sessions,
   ...oauth,

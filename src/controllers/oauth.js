@@ -18,7 +18,6 @@ const getLinkedInAuthUrl = {
 };
 
 export const linkedInRedirectHandler = (req: *, reply: *) => 
-  // console.log(req.params.url);
   fetch('https://www.linkedin.com/oauth/v2/accessToken', {
     method: 'POST',
     headers: {
@@ -33,11 +32,9 @@ export const linkedInRedirectHandler = (req: *, reply: *) =>
     }),
   })
   .then(resp => {
-    console.log(resp);
     return resp.json();
   })
   .then((json)=>{
-    console.log(json);
     const { access_token: token } = json;
     return fetch('https://api.linkedin.com/v1/people/~:(email-address,id,firstName,lastName,picture-url)?format=json', {
       method: 'GET',
@@ -49,11 +46,9 @@ export const linkedInRedirectHandler = (req: *, reply: *) =>
     });
   })
   .then((resp) => {
-    console.log('resp', resp);
     return resp.json();
   })
   .then((json) => {
-    console.log(json);
     const {
       firstName,
       lastName,

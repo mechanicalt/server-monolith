@@ -62,6 +62,7 @@ const update = {
       payload: {
         name: joi.string().optional(),
         description: joi.string().optional(),
+        status: joi.number().optional(),
       },
     },
   },
