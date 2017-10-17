@@ -31,7 +31,7 @@ export function createHandler(request: *, reply: *) {
             status: statusTypes.OFFERED,
           },
         t),
-      ]).then(() => null);
+      ]).then(([id]) => id);
     });
   })
   .then(reply)
