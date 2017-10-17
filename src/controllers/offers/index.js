@@ -46,6 +46,7 @@ export const create = {
     validate: {
       payload: {
         internshipId: joi.string().required(),
+        message: joi.string().required(),
       },
     },
   },
