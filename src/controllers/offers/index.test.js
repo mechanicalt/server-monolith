@@ -44,8 +44,8 @@ describe('offers', () => {
       }),
     ]).then(() => {
       return createHandler(request, mockReply)
-      .then(() => {
-        return repo.retrieveOne({}).then((offer) => {
+      .then((id) => {
+        return repo.retrieveOne({ id }).then((offer) => {
           return expect(offer.applicationId).toBe(applicationId);
         });
       }).then(() => {
