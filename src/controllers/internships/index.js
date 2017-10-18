@@ -5,6 +5,7 @@ import { getUser } from 'hapi-utils/request';
 import * as services from 'services/internships';
 import * as projectServices from 'services/projects';
 import repo from 'repositories/internships';
+import { indexEndpoint } from 'utils/controller';
 
 export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
@@ -162,4 +163,5 @@ export default controller('internships', [
   update,
   getByProject,
   search,
+  indexEndpoint(repo),
 ]);
