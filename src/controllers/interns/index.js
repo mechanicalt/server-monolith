@@ -65,15 +65,17 @@ const getByUser = {
 
 export function getByInternshipHandler(request: *, reply: *) {
   const { internshipId } = request.params;
+  const { status } = request.payload;
   return repo.retrieveAll({
     internshipId,
+    status,
   })
   .then(reply)
   .catch(reply);
 }
 
 const getByInternship = {
-  method: 'GET',
+  method: 'POST',
   path: '/by_internship/{internshipId}',
   handler: getByInternshipHandler,
   config: {
@@ -81,6 +83,9 @@ const getByInternship = {
     validate: {
       params: {
         internshipId: joi.string().required(),
+      },
+      payload: {
+        status: joi.array().items(joi.number().optional()).optional(),
       },
     },
   },
@@ -131,12 +136,14 @@ export function logMinutesHandler(request: *, reply: *) {
     id,
     userId,
   }).then((intern) => {
+    const totalMinutes = intern.minutes + minutes;
     return repo.update({
       id,
       userId,
     },
       {
-        minutes: intern.minutes + minutes,
+        minutes: totalMinutes,
+        status: totalMinutes > 2400 ? statusTypes.AWAITING_APPROVAL : intern.status,
       });
   })
   .then(reply)
@@ -159,7 +166,7 @@ export const logMinutes = {
   },
 };
 
-export default controller('applications', [
+export default controller('interns', [
   status,
   logMinutes,
   getByUser,

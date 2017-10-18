@@ -12,7 +12,7 @@ class InternRepo extends Repo {
     .join('projects', null, 'projects.id = internships.project_id')
     .where('interns.id = ?', internId);
     const { text, values } = query.toParam();
-    return db.one(text, values).then(i => i.userId);
+    return db.one(text, values);
   }
 }
 
