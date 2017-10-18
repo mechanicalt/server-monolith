@@ -27,6 +27,34 @@ export function byInternshipHandler(request: *, reply: *) {
   .catch(reply);
 }
 
+export const byInternship = {
+  method: 'POST',
+  path: '/by_internship/{id}',
+  handler: byInternshipHandler,
+  config: {
+    validate: {
+      params: {
+        id: joi.string().required(),
+      },
+    },
+  },
+};
+
+export function indexHandler(request: *, reply: *) {
+  const { id: userId } = getUser(request);
+  return repo.retrieveAll({
+    userId,
+  })
+  .then(reply)
+  .catch(reply);
+}
+
+export const index = {
+  method: 'GET',
+  path: '',
+  handler: indexHandler,
+};
+
 export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { internshipId } = request.payload;
@@ -75,20 +103,8 @@ export const create = {
   },
 };
 
-export const byInternship = {
-  method: 'POST',
-  path: '/by_internship/{id}',
-  handler: byInternshipHandler,
-  config: {
-    validate: {
-      params: {
-        id: joi.string().required(),
-      },
-    },
-  },
-};
-
 export default controller('applications', [
   create,
   byInternship,
+  index,
 ]);
