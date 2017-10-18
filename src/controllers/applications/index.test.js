@@ -6,8 +6,8 @@ import repo from 'repositories/applications';
 import { statusTypes } from 'models/Internship';
 import { createHandler } from './';
 
-describe('internships', () => {
-  it('getInternshipUserId', () => {
+describe('applications', () => {
+  it('create', () => {
     const internshipId = getId();
     const projectId = getId();
     const userId = getId();
