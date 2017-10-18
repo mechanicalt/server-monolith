@@ -6,6 +6,8 @@ import { getUser } from 'hapi-utils/request';
 import { createTransaction } from 'hapi-utils/repos';
 import applicationsRepo from 'repositories/applications';
 import repo from 'repositories/offers';
+import internsRepo from 'repositories/interns';
+import { statusTypes as internStatusTypes } from 'models/Intern';
 import { statusTypes } from 'models/Application';
 
 export function createHandler(request: *, reply: *) {
@@ -88,12 +90,30 @@ export const acceptHandler = (request: *, reply: *) => {
     if (userId !== application.userId) {
       throw boom.unauthorized('You do not have permission to accept this offer');
     }
-    return applicationsRepo.update({
-      id: application.id,
-    }, {
-      status: statusTypes.OFFER_ACCEPTED,
+    return internsRepo.retrieve({
+      internshipId: application.internshipId,
+      userId,
+      status: [internStatusTypes.ACTIVE, internStatusTypes.AWAITING_APPROVAL],
+    }).then((intern) => {
+      if (intern) {
+        throw boom.badRequest('You are already an active intern at this internship');
+      }
+      return Promise.all([
+        applicationsRepo.update({
+          id: application.id,
+        }, {
+          status: statusTypes.OFFER_ACCEPTED,
+        }),
+        internsRepo.insert({
+          userId,
+          internshipId: application.internshipId,
+          status: internStatusTypes.ACTIVE,
+          minutes: 0,
+        }),
+      ]);
     });
   })
+  .then(() => null)
   .then(reply)
   .catch(reply);
 };

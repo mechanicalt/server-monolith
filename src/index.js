@@ -9,10 +9,12 @@ import internships from 'controllers/internships';
 import techs from 'controllers/techs';
 import applications from 'controllers/applications';
 import offers from 'controllers/offers';
+import interns from 'controllers/interns';
 import userPlugin from 'app/users';
 import 'rpcServers';
 
 module.exports = getRegister([
+  ...interns,
   ...applications,
   ...users,
   ...sessions,
