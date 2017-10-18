@@ -45,7 +45,7 @@ export const create = {
   config: {
     validate: {
       payload: {
-        internshipId: joi.string().required(),
+        applicationId: joi.string().required(),
         message: joi.string().required(),
       },
     },
@@ -53,6 +53,6 @@ export const create = {
 };
 
 
-export default controller('applications', [
+export default controller('offers', [
   create,
 ]);
