@@ -5,6 +5,7 @@ import flash from 'hapi-utils/flash';
 import { createTransaction } from 'hapi-utils/repos';
 import joi from 'joi';
 import repo from 'repositories/users';
+import { getUser } from 'hapi-utils/request';
 import * as rpc from 'rpc/users/emails';
 import * as services from '../services/users';
 import * as sessionServices from '../services/sessions';
@@ -50,6 +51,29 @@ export const create = {
       payload: {
         username: joiUsername,
         email: joi.string().email().required(),
+      },
+    },
+  },
+};
+
+export const updateHandler = (request: *, reply: *) => {
+  const { id } = getUser(request);
+  return repo.update({
+    id,
+  },
+  request.payload)
+  .then(reply)
+  .catch(reply);
+};
+
+export const update = {
+  method: 'PATCH',
+  path: '/{id}',
+  handler: updateHandler,
+  config: {
+    validate: {
+      payload: {
+        description: joi.string().required(),
       },
     },
   },
@@ -208,4 +232,5 @@ export default controller('users', [
   confirmEmail,
   loginToken,
   search,
+  update,
 ]);
