@@ -1,10 +1,12 @@
 // @flow
 import joi from 'joi';
+import boom from 'boom';
 import controller from 'hapi-utils/controllers';
 import { getUser } from 'hapi-utils/request';
 import * as services from 'services/internships';
 import * as projectServices from 'services/projects';
 import repo from 'repositories/internships';
+import internsRepo from 'repositories/interns';
 import { indexEndpoint } from 'utils/controller';
 
 export function createHandler(request: *, reply: *) {
@@ -93,15 +95,17 @@ export const byUser = {
 
 export function getByProjectHandler(request: *, reply: *) {
   const { id } = request.params;
+  const { status } = request.payload;
   return repo.retrieveAll({
     projectId: id,
+    status,
   })
   .then(reply)
   .catch(reply);
 }
 
 export const getByProject = {
-  method: 'GET',
+  method: 'POST',
   path: '/by_project/{id}',
   handler: getByProjectHandler,
   config: {
@@ -109,6 +113,9 @@ export const getByProject = {
     validate: {
       params: {
         id: joi.string().required(),
+      },
+      payload: {
+        status: joi.array().items(joi.number().required()).required(),
       },
     },
   },
@@ -155,6 +162,42 @@ const search = {
   },
 };
 
+export const delHandler = (request: *, reply: *) => {
+  const { id: userId } = getUser(request);
+  const { id } = request.params;
+  return repo.getInternshipUserId(id)
+  .then((internshipUserId) => {
+    if (userId !== internshipUserId) {
+      throw boom.unauthorized('You do not have permission to delete this internship');
+    }
+    return internsRepo.retrieveAll({
+      internshipId: id,
+    });
+  })
+  .then((interns) => {
+    if (interns.length) {
+      throw boom.badRequest(`You cannot delete internships which have had atleast a single intern`)
+    }
+    return repo.remove({
+      id,
+    });
+  })
+  .then(reply)
+  .catch(reply);
+};
+
+const del = {
+  method: 'DELETE',
+  path: '/{id}',
+  handler: delHandler,
+  config: {
+    validate: {
+      params: {
+        id: joi.string().required(),
+      },
+    },
+  },
+};
 
 export default controller('internships', [
   create,
@@ -164,4 +207,5 @@ export default controller('internships', [
   getByProject,
   search,
   indexEndpoint(repo),
+  del,
 ]);
