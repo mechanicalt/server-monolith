@@ -15,13 +15,13 @@ const oauthSessionStart = (id, username) => {
   });
 };
 
-export function linkedInOAuth(id, { username, email, imageUrl }) {
+export function linkedInOAuth(id, { username, email, imageUrl, linkedInUrl }) {
   return oauthRepo.findUser(id, oauthTypes.LINKEDIN)
   .then((oauth) => {
     // No Account
     if (!oauth) {
       const emailToken = crypto.randomBytes(20).toString('hex');
-      return usersRepo.insert({ emailToken, email, imageUrl, username })
+      return usersRepo.insert({ emailToken, email, imageUrl, username, linkedInUrl })
       .then((userId) => {
         return oauthRepo.insert({ userId, oauthId: id, type: oauthTypes.LINKEDIN })
         .then(() => {
