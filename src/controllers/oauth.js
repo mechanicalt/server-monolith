@@ -36,7 +36,7 @@ export const linkedInRedirectHandler = (req: *, reply: *) =>
   })
   .then((json)=>{
     const { access_token: token } = json;
-    return fetch('https://api.linkedin.com/v1/people/~:(email-address,id,firstName,lastName,picture-url)?format=json', {
+    return fetch('https://api.linkedin.com/v1/people/~:(public-profile-url,email-address,id,firstName,lastName,picture-url)?format=json', {
       method: 'GET',
       headers: {
         Connection: 'Keep-Alive',
@@ -55,8 +55,9 @@ export const linkedInRedirectHandler = (req: *, reply: *) =>
       id,
       pictureUrl: imageUrl,
       emailAddress: email,
+      publicProfileUrl: linkedInUrl,
     } = json;
-    return services.linkedInOAuth(id, { username: `${firstName} ${lastName}`, email, imageUrl });
+    return services.linkedInOAuth(id, { username: `${firstName} ${lastName}`, email, imageUrl, linkedInUrl });
   })
   .then((finalUrl) => {
     return reply().redirect(finalUrl);

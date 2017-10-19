@@ -179,38 +179,6 @@ export const loginToken = {
   },
 };
 
-export function createUsernameHandler(request: *, reply: *) {
-  const { id, token } = request.params;
-  const { username } = request.payload;
-  return services.doesUsernameAlreadyExist(username)
-  .then(() => {
-    return services.createUsername(id, token, username)
-    .then(() => sessionServices.create({ username, id })
-      .then((jwtoken) => {
-        reply(jwtoken);
-      }),
-    );
-  }).catch(reply);
-}
-
-export const createUsername = {
-  method: 'POST',
-  path: '/{id}/create_username/{token}',
-  handler: createUsernameHandler,
-  config: {
-    auth: false,
-    validate: {
-      params: {
-        id: joi.string().required(),
-        token: joi.string().required(),
-      },
-      payload: {
-        username: joi.string().required(),
-      },
-    },
-  },
-};
-
 export function searchHandler(request: *, reply: *) {
   return repo.search(request.payload.searchText)
   .then(reply)
@@ -238,7 +206,6 @@ export default controller('users', [
   checkEmail,
   checkUsername,
   confirmEmail,
-  createUsername,
   loginToken,
   search,
 ]);
