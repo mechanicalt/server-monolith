@@ -3,12 +3,11 @@ import nodemailer from 'nodemailer';
 import EmailTemplate from 'email-templates';
 import Handlebars from 'handlebars';
 import path from 'path';
-import htmlToText from 'html-to-text';
 import layoutPartial from './partials/layout';
 
 Handlebars.registerPartial('layout', layoutPartial);
 
-const defaultFrom = 'noreply@title.org';
+const defaultFrom = 'noreply@menternship.org';
 
 const { SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_PORT = 587 } = process.env;
 const transporter = nodemailer.createTransport({
@@ -63,8 +62,9 @@ export class Email {
     return template.send({
       template: this.templateName,
       message: {
+        from: defaultFrom,
+        subject: 'Message from menternship',
         ...this.emailProps,
-        from: this.emailProps.from || defaultFrom,
       },
       locals: this.templateProps,
     })

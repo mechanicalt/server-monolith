@@ -46,7 +46,7 @@ export function createHandler(request: *, reply: *) {
         .then((([user]) => {
           rpcEmail.sendEmail(types.createOffer, {
             to: user.email,
-            subject: 'You been sent an offer',
+            subject: 'You have been sent an offer',
           },
             {
               internshipName: internship.name,

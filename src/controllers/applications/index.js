@@ -3,10 +3,13 @@ import boom from 'boom';
 import joi from 'joi';
 import controller from 'hapi-utils/controllers';
 import { getUser } from 'hapi-utils/request';
+import { types } from 'hapi-utils/rpc/emails';
 import internshipRepo from 'repositories/internships';
 import * as internshipServices from 'services/internships';
 import repo from 'repositories/applications';
 import { statusTypes } from 'models/Application';
+import * as rpcEmail from 'rpc/projects/emails';
+import * as rpcUsers from 'rpc/projects/users';
 
 export function byInternshipHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
@@ -59,16 +62,17 @@ export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { internshipId } = request.payload;
   return Promise.all([
+    internshipRepo.getInternshipWithUserId(internshipId).then((internship) => {
+      if (internship.userId === userId) {
+        throw boom.badRequest('You cannot apply to your own internship');
+      }
+      return internship;
+    }),
     internshipRepo.retrieveOne({
       id: internshipId,
     }).then((internship) => {
       if (!internship.isActive()) {
         throw boom.badRequest('Internship is not Active');
-      }
-    }),
-    internshipServices.doesUserOwnInternship(userId, internshipId).then((result) => {
-      if (result) {
-        throw boom.badRequest('You cannot apply to your own internship');
       }
     }),
     repo.retrieve({
@@ -79,7 +83,16 @@ export function createHandler(request: *, reply: *) {
         throw boom.badRequest('You have already applied for this internship');
       }
     }),
-  ]).then(() => {
+  ]).then(([internship]) => {
+    rpcUsers.getUsers([userId, internship.userId]).then(([applicant, owner])=>{
+      return rpcEmail.sendEmail(types.createApplication,
+        { to: owner.email, subject: 'Menternship - New Applicant' },
+        {
+          username: applicant.username,
+          internshipName: internship.name,
+          internshipApplicationsUrl: `${process.env.CLIENT_URL}/applicants/${internship.id}`,
+        })
+    })
     return repo.insert({
       userId,
       internshipId,

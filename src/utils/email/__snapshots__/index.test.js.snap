@@ -1,8 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`emailUtils Email 1`] = `
+exports[`emailUtils acceptOffer 1`] = `
 Object {
-  "from": "noreply@title.org",
+  "from": "noreply@menternship.org",
+  "to": Array [
+    "example@menternship.org",
+  ],
+}
+`;
+
+exports[`emailUtils createOffer 1`] = `
+Object {
+  "from": "noreply@menternship.org",
+  "to": Array [
+    "example@menternship.org",
+  ],
+}
+`;
+
+exports[`emailUtils rejectOffer 1`] = `
+Object {
+  "from": "noreply@menternship.org",
   "to": Array [
     "example@menternship.org",
   ],

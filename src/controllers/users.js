@@ -26,7 +26,7 @@ export function createHandler(request: *, reply: *) {
       rpc.createUser({
         username,
         email,
-      }, `${process.env.BASE_URL}/${id}/confirm_email/${emailToken}`);
+      }, `${process.env.BASE_URL}/users/${id}/confirm_email/${emailToken}`);
       return sessionServices.create({ username, id })
       .then((token) => {
         reply({
