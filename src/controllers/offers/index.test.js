@@ -5,6 +5,7 @@ import internshipsRepo from 'repositories/internships';
 import applicationsRepo from 'repositories/applications';
 import repo from 'repositories/offers';
 import internsRepo from 'repositories/interns';
+import usersRepo from 'repositories/users';
 import { statusTypes } from 'models/Internship';
 import { statusTypes as applicationStatusTypes } from 'models/Application';
 import { statusTypes as internStatusTypes } from 'models/Intern';
@@ -29,6 +30,11 @@ describe('offers', () => {
       payload,
     }, { id: userId });
     return Promise.all([
+      usersRepo.insert({
+        id: otherUserId,
+        email: 'email@email.com',
+        username: 'username',
+      }),
       applicationsRepo.insert({
         id: applicationId,
         status: applicationStatusTypes.PENDING,
@@ -72,6 +78,11 @@ describe('offers', () => {
       params,
     }, { id: userId });
     return Promise.all([
+      usersRepo.insert({
+        id: userId,
+        email: 'email@email.com',
+        username: 'username',
+      }),
       applicationsRepo.insert({
         id: applicationId,
         status: applicationStatusTypes.OFFERED,
@@ -109,6 +120,7 @@ describe('offers', () => {
   });
   afterEach(() => {
     return Promise.all([
+      truncate('users'),
       truncate('projects'),
       truncate('internships'),
       truncate('applications'),
