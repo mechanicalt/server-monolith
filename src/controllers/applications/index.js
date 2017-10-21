@@ -84,15 +84,13 @@ export function createHandler(request: *, reply: *) {
       }
     }),
   ]).then(([internship]) => {
-    rpcUsers.getUsers([userId, internship.userId]).then(([applicant, owner])=>{
-      return rpcEmail.sendEmail(types.createApplication,
+    rpcUsers.getUsers([userId, internship.userId]).then(([applicant, owner]) => rpcEmail.sendEmail(types.createApplication,
         { to: owner.email, subject: 'Menternship - New Applicant' },
-        {
-          username: applicant.username,
-          internshipName: internship.name,
-          internshipApplicationsUrl: `${process.env.CLIENT_URL}/applicants/${internship.id}`,
-        })
-    })
+      {
+        username: applicant.username,
+        internshipName: internship.name,
+        internshipApplicationsUrl: `${process.env.CLIENT_URL}/applicants/${internship.id}`,
+      }));
     return repo.insert({
       userId,
       internshipId,

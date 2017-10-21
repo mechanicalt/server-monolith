@@ -28,22 +28,14 @@ describe('applications', () => {
         id: projectId,
         userId: otherUserId,
       }),
-    ]).then(() => {
-      return createHandler(request, mockReply)
-      .then((id) => {
-        return repo.retrieveOne({
-          id,
-        }).then((application) => {
-          return expect(application.internshipId).toBe(internshipId);
-        });
-      });
-    });
+    ]).then(() => createHandler(request, mockReply)
+      .then(id => repo.retrieveOne({
+        id,
+      }).then(application => expect(application.internshipId).toBe(internshipId))));
   });
-  afterEach(()=>{
-    return Promise.all([
-      truncate('projects'),
-      truncate('internships'),
-      truncate('applications'),
-    ]);
-  });
+  afterEach(() => Promise.all([
+    truncate('projects'),
+    truncate('internships'),
+    truncate('applications'),
+  ]));
 });

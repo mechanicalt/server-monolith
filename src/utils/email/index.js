@@ -1,4 +1,5 @@
 // @flow
+/* eslint-disable no-console */
 import nodemailer from 'nodemailer';
 import EmailTemplate from 'email-templates';
 import Handlebars from 'handlebars';
@@ -21,13 +22,13 @@ const transporter = nodemailer.createTransport({
 });
 
 // verify connection configuration
-transporter.verify(function(error, success) {
-   if (error) {
-        console.log(error);
-        throw Error()
-   } else {
-        console.log('Server is ready to take our messages');
-   }
+transporter.verify((error) => {
+  if (error) {
+    console.log(error);
+    throw Error();
+  } else {
+    console.log('Server is ready to take our messages');
+  }
 });
 
 export class Email {
@@ -72,17 +73,5 @@ export class Email {
   }
 }
 
-// const transport = (mailOptions: Object) => new Promise((resolve, reject) => {
-//   transporter.sendMail(mailOptions, (error) => {
-//     if (error) {
-//       reject(error);
-//     }
-//     resolve();
-//   });
-// });
-
-
-export default (notifications: Email[]) => {
-  return Promise.all(notifications.map(notification => notification.prepare())).catch(console.log);
-};
-
+export default (notifications: Email[]) => Promise.all(notifications.map(notification => notification.prepare())).catch(console.log);
+/* eslint-enable no-console */

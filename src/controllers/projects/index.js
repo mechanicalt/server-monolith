@@ -3,7 +3,6 @@ import joi from 'joi';
 import boom from 'boom';
 import controller from 'hapi-utils/controllers';
 import { getUser } from 'hapi-utils/request';
-import * as services from 'services/projects';
 import repo from 'repositories/projects';
 import internshipRepo from 'repositories/internships';
 import { indexEndpoint } from 'utils/controller';
@@ -126,7 +125,7 @@ export const delHandler = (request: *, reply: *) => {
     projectId: id,
   }).then((internships) => {
     if (internships.length) {
-      throw boom.badRequest(`You need to delete all of this project's internships before deleting the project`)
+      throw boom.badRequest('You need to delete all of this project\'s internships before deleting the project');
     }
     return repo.remove({
       id,

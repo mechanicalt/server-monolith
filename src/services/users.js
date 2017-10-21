@@ -1,6 +1,5 @@
 // @flow
 import boom from 'boom';
-import qs from 'qs';
 import User from 'models/User';
 import repo from 'repositories/users';
 import * as rpc from 'rpc/users/emails';
@@ -73,7 +72,5 @@ export function confirmEmail(id: $$id, token: string) {
 
 export function createUsername(id: $$id, emailToken: string, username: string) {
   return repo.retrieveOne({ id, emailToken })
-  .then(() => {
-    return repo.update({ id }, { username, confirmedEmail: new Date().toDateString() });
-  });
+  .then(() => repo.update({ id }, { username, confirmedEmail: new Date().toDateString() }));
 }

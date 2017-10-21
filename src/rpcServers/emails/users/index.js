@@ -8,11 +8,9 @@ export const createUser = ({ user, activationLink }: Object) => {
   .then(() => 'success');
 };
 
-export const getLoginToken = ({ email, loginToken }: Object) => {
-  return sendNotifications([
-    new Email('getLoginToken', { to: email }, { loginToken }),
-  ]).then(() => 'success');
-};
+export const getLoginToken = ({ email, loginToken }: Object) => sendNotifications([
+  new Email('getLoginToken', { to: email }, { loginToken }),
+]).then(() => 'success');
 
 
 export default {

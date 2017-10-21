@@ -22,6 +22,7 @@
     "react/jsx-uses-vars": 2,
     "react/react-in-jsx-scope": 2,
     "no-unused-vars": 1,
+    "max-len": 0,
     "react/jsx-filename-extension": 0,
     "import/no-extraneous-dependencies": 0,
     "import/no-unresolved": 0,
@@ -39,5 +40,13 @@
     "babel",
     "react",
     "flowtype"
-  ]
+  ],
+  "globals": {
+      "describe": false,
+      "it": false,
+      "expect": false,
+      "jest": false,
+      "beforeEach": false,
+      "afterEach": false
+  }
 }

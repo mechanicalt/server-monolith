@@ -12,11 +12,10 @@ import * as sessionServices from '../services/sessions';
 
 export function createHandler(request: *, reply: *) {
   const { email, username } = request.payload;
-  return createTransaction((t) => {
-    return Promise.all([
-      services.doesEmailAlreadyExist(email, t),
-      services.doesUsernameAlreadyExist(username, t),
-    ])
+  return createTransaction(t => Promise.all([
+    services.doesEmailAlreadyExist(email, t),
+    services.doesUsernameAlreadyExist(username, t),
+  ])
     .then(() => {
       const emailToken = crypto.randomBytes(20).toString('hex');
       const loginToken = crypto.randomBytes(20).toString('hex');
@@ -34,8 +33,7 @@ export function createHandler(request: *, reply: *) {
           session: token,
         });
       });
-    });
-  })
+    }))
   .catch(reply);
 }
 
@@ -79,9 +77,7 @@ export const update = {
   },
 };
 
-export const getUsersHandler = (request: *, reply: *) => {
-  return services.getUsers(request.payload.userIds).then(reply).catch(reply);
-};
+export const getUsersHandler = (request: *, reply: *) => services.getUsers(request.payload.userIds).then(reply).catch(reply);
 
 export const getUsers = {
   method: 'POST',
@@ -100,9 +96,7 @@ export const getUsers = {
   },
 };
 
-export const getHandler = (request: *, reply: *) => {
-  return services.get(request.params.id).then(reply).catch(reply);
-};
+export const getHandler = (request: *, reply: *) => services.get(request.params.id).then(reply).catch(reply);
 
 export const get = {
   method: 'GET',

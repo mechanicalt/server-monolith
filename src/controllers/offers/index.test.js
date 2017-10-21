@@ -11,10 +11,7 @@ import { statusTypes as applicationStatusTypes } from 'models/Application';
 import { statusTypes as internStatusTypes } from 'models/Intern';
 import { createHandler, acceptHandler } from './';
 
-const mockReply = (resp) => {
-  console.log(resp);
-  return resp;
-};
+const mockReply = resp => resp;
 
 describe('offers', () => {
   it('create', () => {
@@ -50,19 +47,9 @@ describe('offers', () => {
         id: projectId,
         userId,
       }),
-    ]).then(() => {
-      return createHandler(request, mockReply)
-      .then((id) => {
-        return repo.retrieveOne({ id }).then((offer) => {
-          return expect(offer.applicationId).toBe(applicationId);
-        });
-      }).then(() => {
-        return applicationsRepo.retrieveOne({ id: applicationId })
-        .then((application) => {
-          return expect(application.status).toBe(applicationStatusTypes.OFFERED);
-        });
-      });
-    });
+    ]).then(() => createHandler(request, mockReply)
+      .then(id => repo.retrieveOne({ id }).then(offer => expect(offer.applicationId).toBe(applicationId))).then(() => applicationsRepo.retrieveOne({ id: applicationId })
+        .then(application => expect(application.status).toBe(applicationStatusTypes.OFFERED))));
   });
   it('accepts', () => {
     const applicationId = getId();
@@ -103,29 +90,17 @@ describe('offers', () => {
         applicationId,
       }),
     ])
-    .then(() => {
-      return acceptHandler(request, mockReply)
-      .then(() => {
-        return applicationsRepo.retrieveOne({ id: applicationId }).then((application) => {
-          return expect(application.status).toBe(applicationStatusTypes.OFFER_ACCEPTED);
-        });
-      })
-      .then(() => {
-        return internsRepo.retrieveOne({ userId, internshipId })
-        .then((intern) => {
-          return expect(intern.status).toBe(internStatusTypes.ACTIVE);
-        });
-      });
-    });
+    .then(() => acceptHandler(request, mockReply)
+      .then(() => applicationsRepo.retrieveOne({ id: applicationId }).then(application => expect(application.status).toBe(applicationStatusTypes.OFFER_ACCEPTED)))
+      .then(() => internsRepo.retrieveOne({ userId, internshipId })
+        .then(intern => expect(intern.status).toBe(internStatusTypes.ACTIVE))));
   });
-  afterEach(() => {
-    return Promise.all([
-      truncate('users'),
-      truncate('projects'),
-      truncate('internships'),
-      truncate('applications'),
-      truncate('offers'),
-      truncate('interns'),
-    ]);
-  });
+  afterEach(() => Promise.all([
+    truncate('users'),
+    truncate('projects'),
+    truncate('internships'),
+    truncate('applications'),
+    truncate('offers'),
+    truncate('interns'),
+  ]));
 });

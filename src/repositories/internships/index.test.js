@@ -21,17 +21,11 @@ describe('internships', () => {
         id: projectId,
         userId,
       }),
-    ]).then(() => {
-      return repo.getInternshipWithUserId(internshipId)
-      .then((internship) => {
-        return expect(internship.userId).toEqual(userId);
-      });
-    });
+    ]).then(() => repo.getInternshipWithUserId(internshipId)
+      .then(internship => expect(internship.userId).toEqual(userId)));
   });
-  afterEach(()=>{
-    return Promise.all([
-      truncate('projects'),
-      truncate('internships'),
-    ]);
-  });
+  afterEach(() => Promise.all([
+    truncate('projects'),
+    truncate('internships'),
+  ]));
 });

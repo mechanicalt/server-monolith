@@ -3,9 +3,7 @@ import Repo, { db, squel } from 'hapi-utils/repos';
 import Internship from 'models/Internship';
 
 class InternshipRepo extends Repo {
-  byUser = () => {
-    return this.retrieveAll();
-  }
+  byUser = () => this.retrieveAll()
   getInternshipWithUserId = (internshipId) => {
     const query = squel.select()
     .field('internships.*')
@@ -26,7 +24,7 @@ class InternshipRepo extends Repo {
     .field('description')
     .field(`setweight(to_tsvector(name), 'A') || 
       setweight(to_tsvector(description), 'B')`, 'document')
-    .from('internships')
+    .from('internships');
     // .where('active = ?', true);
 
     const query = squel.select()
@@ -34,8 +32,8 @@ class InternshipRepo extends Repo {
     .field('name')
     .field('description')
     .from(internshipsWithDocument, 'p_search')
-    .where(`p_search.document @@ to_tsquery('english', ?)`, querySearchText)
-    .order(`ts_rank(p_search.document, to_tsquery('english', ?))`, false, querySearchText)
+    .where('p_search.document @@ to_tsquery(\'english\', ?)', querySearchText)
+    .order('ts_rank(p_search.document, to_tsquery(\'english\', ?))', false, querySearchText);
 
     const { text, values } = query.toParam();
     return db.manyOrNone(text, values);

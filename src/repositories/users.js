@@ -11,7 +11,7 @@ class UserRepo extends Repo {
     .field('description')
     .field(`setweight(to_tsvector(username), 'A') || 
       setweight(to_tsvector(description), 'B')`, 'document')
-    .from('users')
+    .from('users');
     // .where('active = ?', true);
 
     const query = squel.select()
@@ -19,8 +19,8 @@ class UserRepo extends Repo {
     .field('username')
     .field('description')
     .from(usersWithDocument, 'p_search')
-    .where(`p_search.document @@ to_tsquery('english', ?)`, querySearchText)
-    .order(`ts_rank(p_search.document, to_tsquery('english', ?))`, false, querySearchText)
+    .where('p_search.document @@ to_tsquery(\'english\', ?)', querySearchText)
+    .order('ts_rank(p_search.document, to_tsquery(\'english\', ?))', false, querySearchText);
 
     const { text, values } = query.toParam();
     return db.manyOrNone(text, values);

@@ -17,7 +17,7 @@ const getLinkedInAuthUrl = {
   },
 };
 
-export const linkedInRedirectHandler = (req: *, reply: *) => 
+export const linkedInRedirectHandler = (req: *, reply: *) =>
   fetch('https://www.linkedin.com/oauth/v2/accessToken', {
     method: 'POST',
     headers: {
@@ -31,10 +31,8 @@ export const linkedInRedirectHandler = (req: *, reply: *) =>
       client_secret: process.env.LINKED_IN_CLIENT_SECRET,
     }),
   })
-  .then(resp => {
-    return resp.json();
-  })
-  .then((json)=>{
+  .then(resp => resp.json())
+  .then((json) => {
     const { access_token: token } = json;
     return fetch('https://api.linkedin.com/v1/people/~:(public-profile-url,email-address,id,firstName,lastName,picture-url)?format=json', {
       method: 'GET',
@@ -45,9 +43,7 @@ export const linkedInRedirectHandler = (req: *, reply: *) =>
       },
     });
   })
-  .then((resp) => {
-    return resp.json();
-  })
+  .then(resp => resp.json())
   .then((json) => {
     const {
       firstName,
@@ -59,9 +55,7 @@ export const linkedInRedirectHandler = (req: *, reply: *) =>
     } = json;
     return services.linkedInOAuth(id, { username: `${firstName} ${lastName}`, email, imageUrl, linkedInUrl });
   })
-  .then((finalUrl) => {
-    return reply().redirect(finalUrl);
-  });
+  .then(finalUrl => reply().redirect(finalUrl));
 
 const linkedInRedirect = {
   method: 'GET',

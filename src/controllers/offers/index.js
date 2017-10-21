@@ -18,8 +18,7 @@ import 'rpcServers';
 export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { applicationId, message } = request.payload;
-  return createTransaction((t) => {
-    return applicationsRepo.getInternshipFromApplication(applicationId, t)
+  return createTransaction(t => applicationsRepo.getInternshipFromApplication(applicationId, t)
     .then((internship) => {
       if (internship.userId !== userId) {
         throw boom.unauthorized('You do not have permission to send offer');
@@ -55,8 +54,7 @@ export function createHandler(request: *, reply: *) {
         }));
         return id;
       });
-    });
-  })
+    }))
   .then(reply)
   .catch(reply);
 }
@@ -81,11 +79,9 @@ export const byApplicationHandler = (request: *, reply: *) => {
   return applicationsRepo.retrieveOne({
     id: applicationId,
     userId,
-  }).then(() => {
-    return repo.retrieveOne({
-      applicationId,
-    });
-  })
+  }).then(() => repo.retrieveOne({
+    applicationId,
+  }))
   .then(reply)
   .catch(reply);
 };

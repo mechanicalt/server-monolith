@@ -13,11 +13,9 @@ export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { projectId } = request.payload;
   return projectServices.doesUserOwnProject(userId, projectId)
-  .then(() => {
-    return repo.insert({
-      projectId,
-    });
-  })
+  .then(() => repo.insert({
+    projectId,
+  }))
   .then(reply)
   .catch(reply);
 }
@@ -39,16 +37,12 @@ export const updateHandler = (request: *, reply: Function) => {
   const user = getUser(request);
   const { id } = request.params;
   return repo.retrieveOne({ id })
-  .then((internship) => {
-    return projectServices.doesUserOwnProject(user.id, internship.projectId);
-  })
-  .then(() => {
-    return repo.update({
-        id,
-      },
+  .then(internship => projectServices.doesUserOwnProject(user.id, internship.projectId))
+  .then(() => repo.update({
+    id,
+  },
       request.payload,
-    );
-  })
+    ))
   .then(reply)
   .catch(reply);
 };
@@ -176,7 +170,7 @@ export const delHandler = (request: *, reply: *) => {
   })
   .then((interns) => {
     if (interns.length) {
-      throw boom.badRequest(`You cannot delete internships which have had atleast a single intern`)
+      throw boom.badRequest('You cannot delete internships which have had atleast a single intern');
     }
     return repo.remove({
       id,

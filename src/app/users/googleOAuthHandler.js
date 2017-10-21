@@ -21,12 +21,8 @@ export default function googleOAuthHandler(req: Object, reply: Function, tokens:
       if (!oauth) {
         const emailToken = crypto.randomBytes(20).toString('hex');
         return usersRepo.insert({ emailToken, email: profile.emails[0].value })
-        .then(({ id: userId }) => {
-          return oauthRepo.insert({ userId, oauthId: profile.id, type: oauthTypes.google })
-          .then(() => {
-            return reply.redirect(getCreateUsernameUrl(userId, emailToken));
-          });
-        });
+        .then(({ id: userId }) => oauthRepo.insert({ userId, oauthId: profile.id, type: oauthTypes.google })
+          .then(() => reply.redirect(getCreateUsernameUrl(userId, emailToken))));
       }
       // No Activated Account
       if (!oauth.confirmedEmail) {
@@ -34,9 +30,7 @@ export default function googleOAuthHandler(req: Object, reply: Function, tokens:
       }
       // Login
       return sessionServices.create({ id: oauth.id, username: oauth.username })
-      .then((jwt) => {
-        return reply.redirect(`${CLIENT_URL || ''}?auth=${jwt}`);
-      });
+      .then(jwt => reply.redirect(`${CLIENT_URL || ''}?auth=${jwt}`));
     });
   }
   return reply('Sorry, something went wrong, please try again.');
