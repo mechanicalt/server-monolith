@@ -48,7 +48,7 @@
     "jsonwebtoken": "^7.3.0",
     "keymirror-flow": "^1.0.0",
     "md5": "^2.2.1",
-    "menternship-utils-hapi": "^1.0.9",
+    "menternship-utils-hapi": "^1.0.10",
     "moment": "^2.18.1",
     "node-pg-migrate": "^2.10.0",
     "nodemailer": "^4.0.1",

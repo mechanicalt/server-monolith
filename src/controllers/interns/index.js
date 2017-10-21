@@ -1,12 +1,15 @@
 // @flow
 import boom from 'boom';
 import joi from 'joi';
+import { types } from 'hapi-utils/rpc/emails';
 import controller from 'hapi-utils/controllers';
 import { getUser } from 'hapi-utils/request';
 import internshipRepo from 'repositories/internships';
 import * as internshipServices from 'services/internships';
 import repo from 'repositories/interns';
 import { statusTypes } from 'models/Intern';
+import * as rpcEmails from 'rpc/projects/emails';
+import * as rpcUsers from 'rpc/projects/users';
 
 export function byInternshipHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
@@ -100,6 +103,27 @@ export function statusHandler(request: *, reply: *) {
     if (internship.userId !== userId) {
       throw boom.unauthorized('You do not have permission to change the status of this intern');
     }
+    let template;
+    if (status === statusTypes.FIRED) {
+      template = types.internFired;
+    } else {
+      template = types.internCompleted;
+    }
+    repo.retrieveOne({
+      id,
+    }).then((intern) => {
+      return rpcUsers.getUsers([
+        userId,
+        intern.userId,
+      ]).then(([owner, internUser]) => {
+        return rpcEmails.sendEmail(template, {
+          to: internUser.email,
+        }, {
+          username: owner.username,
+          internshipName: internship.name,
+        });
+      });
+    });
     return repo.update({
       id,
     },
@@ -136,14 +160,36 @@ export function logMinutesHandler(request: *, reply: *) {
     id,
     userId,
   }).then((intern) => {
+    if (!intern) {
+      throw boom.unauthorized('You do not have permission to log minutes for this intern');
+    }
     const totalMinutes = intern.minutes + minutes;
+    const internshipHoursComplete = totalMinutes >= 2400;
+    if (internshipHoursComplete) {
+      internshipRepo.getInternshipWithUserId(intern.internshipId)
+      .then((internship) => {
+        return rpcUsers.getUsers([
+          userId,
+          internship.userId,
+        ]).then(([internUser, owner]) => {
+          return rpcEmails.sendEmail(types.internAwaitingApproval, {
+            to: owner.email,
+            subject: `${internUser.username} has completed their intern hours`,
+          }, {
+            username: internUser.username,
+            internshipName: internship.name,
+            approveUserUrl: `${process.env.CLIENT_URL}/internships/${internship.id}`,
+          });
+        });
+      });
+    }
     return repo.update({
       id,
       userId,
     },
       {
         minutes: totalMinutes,
-        status: totalMinutes > 2400 ? statusTypes.AWAITING_APPROVAL : intern.status,
+        status: internshipHoursComplete ? statusTypes.AWAITING_APPROVAL : intern.status,
       });
   })
   .then(reply)

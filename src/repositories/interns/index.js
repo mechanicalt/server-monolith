@@ -5,7 +5,7 @@ import Intern from 'models/Intern';
 class InternRepo extends Repo {
   getInternshipFromIntern = (internId) => {
     const query = squel.select()
-    .field('interns.*')
+    .field('internships.*')
     .field('projects.user_id')
     .from('interns')
     .join('internships', null, 'internships.id = interns.internship_id')
