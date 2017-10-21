@@ -79,7 +79,7 @@
       "<rootDir>/tests/"
     ]
   },
-  "engine": {
+  "engines": {
     "node": "7.10.0"
   }
 }
