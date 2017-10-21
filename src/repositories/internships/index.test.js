@@ -7,7 +7,7 @@ import repo from './';
 const getId = () => Math.floor(Math.random() * 1000000);
 
 describe('internships', () => {
-  it('getInternshipUserId', () => {
+  it('getInternshipWithUserId', () => {
     const internshipId = getId();
     const projectId = getId();
     const userId = getId();
@@ -22,9 +22,9 @@ describe('internships', () => {
         userId,
       }),
     ]).then(() => {
-      return repo.getInternshipUserId(internshipId)
-      .then((id)=>{
-        return expect(id).toEqual(userId);
+      return repo.getInternshipWithUserId(internshipId)
+      .then((internship) => {
+        return expect(internship.userId).toEqual(userId);
       });
     });
   });

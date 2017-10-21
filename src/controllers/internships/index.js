@@ -165,9 +165,9 @@ const search = {
 export const delHandler = (request: *, reply: *) => {
   const { id: userId } = getUser(request);
   const { id } = request.params;
-  return repo.getInternshipUserId(id)
-  .then((internshipUserId) => {
-    if (userId !== internshipUserId) {
+  return repo.getInternshipWithUserId(id)
+  .then((internship) => {
+    if (userId !== internship.userId) {
       throw boom.unauthorized('You do not have permission to delete this internship');
     }
     return internsRepo.retrieveAll({

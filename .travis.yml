@@ -5,7 +5,7 @@ before_script:
   - psql -c 'create database menternship_test;' -U postgres
 matrix:
   include:
-    - node_js: "6"
+    - node_js: "7"
 sudo: required
 dist: trusty
 cache:

@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run migrate up && npm run build && npm run start-server",
+    "start": "NODE_ENV=production npm run migrate up && npm run build && npm run start-server",
     "start-server": "rejoice -r dotenv/config -p ./ -c ./dist/manifest.js",
-    "debug": "node --inspect=5858 node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./src/manifest.js -r babel-core/register",
+    "debug": "NODE_ENV=development node --inspect=5858 node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./src/manifest.js -r babel-core/register",
     "ui-test": "PG_DATABASE=process_test node --inspect=5858 node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./src/manifest.js -r babel-core/register",
     "lint": "eslint src",
-    "test": "NODE_ENV=TEST node -r dotenv/config node_modules/.bin/jest --forceExit",
+    "test": "NODE_ENV=test node -r dotenv/config node_modules/.bin/jest --forceExit",
     "flow": "flow",
     "build": "babel src -d dist",
     "flowtyped": "flow-typed",
@@ -33,12 +33,13 @@
     "capitalize": "^1.0.0",
     "cron": "^1.2.1",
     "dotenv": "^4.0.0",
-    "email-templates": "^2.6.0",
+    "email-templates": "^3.1.0",
     "hapi-auth-google": "^16.1.0",
     "hapi-auth-jwt2": "^7.2.4",
     "hapi-cors-headers": "^1.0.0",
     "hapi-pino": "^1.3.0",
     "hapi-swagger": "^7.7.0",
+    "html-to-text": "^3.3.0",
     "humps": "^2.0.0",
     "inert": "^4.1.0",
     "isomorphic-fetch": "^2.2.1",
@@ -47,7 +48,7 @@
     "jsonwebtoken": "^7.3.0",
     "keymirror-flow": "^1.0.0",
     "md5": "^2.2.1",
-    "menternship-utils-hapi": "^1.0.6",
+    "menternship-utils-hapi": "^1.0.9",
     "moment": "^2.18.1",
     "node-pg-migrate": "^2.10.0",
     "nodemailer": "^4.0.1",
@@ -77,5 +78,8 @@
       "<rootDir>/src/",
       "<rootDir>/tests/"
     ]
+  },
+  "engine": {
+    "node": "7.10.0"
   }
 }

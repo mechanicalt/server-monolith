@@ -1,22 +1,27 @@
 // @flow
 import boom from 'boom';
 import joi from 'joi';
+import { types } from 'hapi-utils/rpc/emails';
 import controller from 'hapi-utils/controllers';
 import { getUser } from 'hapi-utils/request';
 import { createTransaction } from 'hapi-utils/repos';
 import applicationsRepo from 'repositories/applications';
 import repo from 'repositories/offers';
 import internsRepo from 'repositories/interns';
+import internshipRepo from 'repositories/internships';
 import { statusTypes as internStatusTypes } from 'models/Intern';
 import { statusTypes } from 'models/Application';
+import * as rpcEmail from 'rpc/projects/emails';
+import * as rpcUsers from 'rpc/projects/users';
+import 'rpcServers';
 
 export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { applicationId, message } = request.payload;
   return createTransaction((t) => {
-    return applicationsRepo.getInternshipUserIdFromApplication(applicationId, t)
-    .then((internshipUserId) => {
-      if (internshipUserId !== userId) {
+    return applicationsRepo.getInternshipFromApplication(applicationId, t)
+    .then((internship) => {
+      if (internship.userId !== userId) {
         throw boom.unauthorized('You do not have permission to send offer');
       }
       return Promise.all([
@@ -26,6 +31,9 @@ export function createHandler(request: *, reply: *) {
         },
         undefined,
         t),
+        applicationsRepo.retrieveOne({
+          id: applicationId,
+        }, undefined, t),
         applicationsRepo.update({
           id: applicationId,
         },
@@ -33,7 +41,20 @@ export function createHandler(request: *, reply: *) {
             status: statusTypes.OFFERED,
           },
         t),
-      ]).then(([id]) => id);
+      ]).then(([id, application]) => {
+        rpcUsers.getUsers([application.userId])
+        .then((([user]) => {
+          rpcEmail.sendEmail(types.createOffer, {
+            to: user.email,
+            subject: 'You have been sent an offer',
+          },
+            {
+              internshipName: internship.name,
+              offerUrl: `${process.env.CLIENT_URL}/applications`,
+            });
+        }));
+        return id;
+      });
     });
   })
   .then(reply)
@@ -99,6 +120,19 @@ export const acceptHandler = (request: *, reply: *) => {
         throw boom.badRequest('You are already an active intern at this internship');
       }
       return Promise.all([
+        internshipRepo.getInternshipWithUserId(application.internshipId)
+        .then(internship => rpcUsers.getUsers([userId])
+          .then(([user]) => {
+            rpcEmail.sendEmail(types.acceptOffer, {
+              to: user.email,
+              subject: 'Your offer has been accepted',
+            },
+              {
+                internshipName: internship.name,
+                username: user.username,
+                userEmail: user.email,
+              });
+          })),
         applicationsRepo.update({
           id: application.id,
         }, {
@@ -139,11 +173,25 @@ export const rejectHandler = (request: *, reply: *) => {
     if (userId !== application.userId) {
       throw boom.unauthorized('You do not have permission to reject this offer');
     }
-    return applicationsRepo.update({
-      id: application.id,
-    }, {
-      status: statusTypes.OFFER_REJECTED,
-    });
+    return Promise.all([
+      applicationsRepo.update({
+        id: application.id,
+      }, {
+        status: statusTypes.OFFER_REJECTED,
+      }),
+      internshipRepo.getInternshipWithUserId(application.internshipId)
+      .then(internship => rpcUsers.getUsers([userId])
+        .then(([user]) => {
+          rpcEmail.sendEmail(types.rejectOffer, {
+            to: user.email,
+            subject: 'Your offer has been rejected',
+          },
+            {
+              internshipName: internship.name,
+              username: user.username,
+            });
+        })),
+    ]);
   })
   .then(reply)
   .catch(reply);

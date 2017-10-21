@@ -3,8 +3,8 @@ import boom from 'boom';
 import repo from 'repositories/internships';
 
 export const doesUserOwnInternship = (userId: $$id, internshipId: $$id) => {
-  return repo.getInternshipUserId(internshipId).then((id) => {
-    return (id === userId);
+  return repo.getInternshipWithUserId(internshipId).then((internship) => {
+    return (internship.userId === userId);
   });
 };
 

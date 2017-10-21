@@ -6,14 +6,15 @@ class InternshipRepo extends Repo {
   byUser = () => {
     return this.retrieveAll();
   }
-  getInternshipUserId = (internshipId) => {
+  getInternshipWithUserId = (internshipId) => {
     const query = squel.select()
+    .field('internships.*')
     .field('projects.user_id')
     .from('internships')
     .join('projects', null, 'projects.id = internships.project_id')
     .where('internships.id = ?', internshipId);
     const { text, values } = query.toParam();
-    return db.one(text, values).then(i => i.userId);
+    return db.one(text, values);
   }
 
   search = (searchText: string) => {
