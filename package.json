@@ -78,5 +78,8 @@
       "<rootDir>/src/",
       "<rootDir>/tests/"
     ]
+  },
+  "engine": {
+    "node": "7.10.0"
   }
 }
