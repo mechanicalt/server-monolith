@@ -19,8 +19,8 @@ class ProjectRepo extends Repo {
     .field('name')
     .field('description')
     .from(projectsWithDocument, 'p_search')
-    .where('p_search.document @@ to_tsquery(\'english\', ?)', querySearchText)
-    .order('ts_rank(p_search.document, to_tsquery(\'english\', ?))', false, querySearchText);
+    .where('p_search.document @@ to_tsquery(\'simple\', ?)', querySearchText)
+    .order('ts_rank(p_search.document, to_tsquery(\'simple\', ?))', false, querySearchText);
 
     const { text, values } = query.toParam();
     return db.manyOrNone(text, values);
