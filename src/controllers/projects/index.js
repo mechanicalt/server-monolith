@@ -99,7 +99,8 @@ export const byUser = {
 };
 
 export function searchHandler(request: *, reply: *) {
-  return repo.search(request.payload.searchText)
+  const { searchText } = request.payload;
+  return (searchText ? repo.search(searchText) : repo.retrieveAll({}))
   .then(reply)
   .catch(reply);
 }
@@ -112,7 +113,7 @@ const search = {
     auth: false,
     validate: {
       payload: {
-        searchText: joi.string().required(),
+        searchText: joi.string().allow('').required(),
       },
     },
   },

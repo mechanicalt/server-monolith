@@ -3,11 +3,11 @@ import joi from 'joi';
 import boom from 'boom';
 import controller from 'hapi-utils/controllers';
 import { getUser } from 'hapi-utils/request';
-import * as services from 'services/internships';
 import * as projectServices from 'services/projects';
 import repo from 'repositories/internships';
 import internsRepo from 'repositories/interns';
 import { indexEndpoint } from 'utils/controller';
+import { statusTypes } from 'models/Internship';
 
 export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
@@ -137,11 +137,11 @@ const get = {
 };
 
 export function searchHandler(request: *, reply: *) {
-  return repo.search(request.payload.searchText)
+  const { searchText } = request.payload;
+  return (searchText ? repo.search(searchText) : repo.retrieveAll({ status: statusTypes.ACTIVE }))
   .then(reply)
   .catch(reply);
 }
-
 const search = {
   method: 'POST',
   path: '/search',
@@ -150,7 +150,7 @@ const search = {
     auth: false,
     validate: {
       payload: {
-        searchText: joi.string().required(),
+        searchText: joi.string().allow('').required(),
       },
     },
   },
