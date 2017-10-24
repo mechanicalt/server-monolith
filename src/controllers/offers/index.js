@@ -128,6 +128,14 @@ export const acceptHandler = (request: *, reply: *) => {
                 username: user.username,
                 userEmail: user.email,
               });
+            rpcEmail.sendEmail(types.acceptOfferIntern, {
+              to: user.email,
+              subject: `${internship.name} - Accepted Offer: Next Steps`,
+            },
+              {
+                internshipName: internship.name,
+                userId: user.id,
+              });
           })),
         applicationsRepo.update({
           id: application.id,
