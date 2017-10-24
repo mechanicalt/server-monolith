@@ -134,7 +134,7 @@ export const acceptHandler = (request: *, reply: *) => {
             },
               {
                 internshipName: internship.name,
-                userId: user.id,
+                logHoursUrl: `${process.env.CLIENT_URL}/users/${user.id}`,
               });
           })),
         applicationsRepo.update({
