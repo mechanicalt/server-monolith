@@ -117,10 +117,10 @@ export const acceptHandler = (request: *, reply: *) => {
       }
       return Promise.all([
         internshipRepo.getInternshipWithUserId(application.internshipId)
-        .then(internship => rpcUsers.getUsers([userId])
-          .then(([user]) => {
+        .then(internship => rpcUsers.getUsers([userId, internship.userId])
+          .then(([user, owner]) => {
             rpcEmail.sendEmail(types.acceptOffer, {
-              to: user.email,
+              to: owner.email,
               subject: 'Your offer has been accepted',
             },
               {
