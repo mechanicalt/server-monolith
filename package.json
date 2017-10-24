@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production npm run migrate up && npm run build && npm run start-server",
-    "start-server": "rejoice -r dotenv/config -p ./ -c ./dist/manifest.js",
+    "start": "NODE_ENV=production npm run clean && npm run migrate up && npm run build && npm run start-server",
+    "start-server": "NODE_ENV=production node node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./dist/manifest.js",
     "debug": "NODE_ENV=development node --inspect=5858 node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./src/manifest.js -r babel-core/register",
     "ui-test": "PG_DATABASE=process_test node --inspect=5858 node_modules/.bin/rejoice -r dotenv/config -p ./ -c ./src/manifest.js -r babel-core/register",
     "lint": "eslint src",
     "test": "NODE_ENV=test node -r dotenv/config node_modules/.bin/jest --forceExit",
     "flow": "flow",
-    "build": "babel src -d dist",
+    "clean": "rm -rf dist",
+    "build": "babel src -d dist --copy-files",
     "flowtyped": "flow-typed",
     "migrate": "pg-migrate",
     "test-migrate": "pg-migrate -d TEST_DATABASE_URL"

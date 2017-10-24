@@ -113,7 +113,7 @@ const search = {
     auth: false,
     validate: {
       payload: {
-        searchText: joi.string().allow('').required(),
+        searchText: joi.string().trim().allow('').required(),
       },
     },
   },
