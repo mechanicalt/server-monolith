@@ -1,6 +1,10 @@
 # server-monolith
 
-http://api.menternship.org
+Production
+https://menternship.org/api
+
+Dev
+http://api.dev.menternship.org
 
 ## Technologies
 - [ ] hapijs
