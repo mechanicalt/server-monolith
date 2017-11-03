@@ -11,6 +11,7 @@ import * as services from '../services/users';
 import * as sessionServices from '../services/sessions';
 
 export function createHandler(request: *, reply: *) {
+  if (process.env.NODE_ENV === 'production') return reply();
   const { email, username } = request.payload;
   return createTransaction(t => Promise.all([
     services.doesEmailAlreadyExist(email, t),
