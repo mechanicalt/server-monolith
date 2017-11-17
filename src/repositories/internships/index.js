@@ -38,6 +38,18 @@ class InternshipRepo extends Repo {
     const { text, values } = query.toParam();
     return db.manyOrNone(text, values);
   }
+  mostRelevant = () => {
+    const query = squel.select()
+    .field('SUM(p.points)', 'points')
+    .field('internships.*')
+    .from('internships')
+    .left_join('points', 'p', 'p.internship_id = internships.id')
+    .group('internships.id')
+    .order('points', false)
+    .order('internships.created_at', false);
+    const { text, values } = query.toParam();
+    return db.manyOrNone(text, values);
+  }
 }
 
 export default new InternshipRepo('internships', Internship);

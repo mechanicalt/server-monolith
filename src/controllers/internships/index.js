@@ -138,7 +138,7 @@ const get = {
 
 export function searchHandler(request: *, reply: *) {
   const { searchText } = request.payload;
-  return (searchText ? repo.search(searchText) : repo.retrieveAll({ status: statusTypes.ACTIVE }))
+  return (searchText ? repo.search(searchText) : repo.mostRelevant())
   .then(reply)
   .catch(reply);
 }
