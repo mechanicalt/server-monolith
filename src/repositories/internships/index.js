@@ -40,7 +40,7 @@ class InternshipRepo extends Repo {
   }
   mostRelevant = () => {
     const query = squel.select()
-    .field('COALESCE(SUM(p.points), 0)', 'points')
+    .field('COALESCE(SUM(p.points), 0)::Integer', 'points')
     .field('internships.*')
     .from('internships')
     .left_join('points', 'p', 'p.internship_id = internships.id')
