@@ -1,7 +1,6 @@
 // @flow
-import Repo, { db, squel } from 'hapi-utils/repos';
+import Repo from 'hapi-utils/repos';
 
-class TechRepo extends Repo {
-}
+class TechRepo extends Repo {}
 
 export default new TechRepo('techs');

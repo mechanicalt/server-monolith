@@ -14,7 +14,7 @@ export default class Application {
   status: number;
   createdAt: Date;
   constructor(application?: Object = {}) {
-    ['id', 'userId', 'internshipId', 'status', 'createdAt'].forEach((key) => {
+    ['id', 'userId', 'internshipId', 'status', 'createdAt'].forEach(key => {
       // $FlowFixMe
       this[key] = application[key];
     });

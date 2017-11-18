@@ -1,5 +1,5 @@
 {
-  "name": "process_server",
+  "name": "menternship-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -15,7 +15,8 @@
     "build": "babel src -d dist --copy-files",
     "flowtyped": "flow-typed",
     "migrate": "pg-migrate",
-    "test-migrate": "pg-migrate -d TEST_DATABASE_URL"
+    "test-migrate": "pg-migrate -d TEST_DATABASE_URL",
+    "pretty": "prettier --write 'src/**/*.js'"
   },
   "author": "",
   "license": "ISC",
@@ -42,18 +43,21 @@
     "hapi-swagger": "^7.7.0",
     "html-to-text": "^3.3.0",
     "humps": "^2.0.0",
+    "husky": "^0.14.3",
     "inert": "^4.1.0",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^21.1.0",
     "joi": "^10.4.1",
     "jsonwebtoken": "^7.3.0",
     "keymirror-flow": "^1.0.0",
+    "lint-staged": "^5.0.0",
     "md5": "^2.2.1",
     "menternship-utils-hapi": "^1.0.11",
     "moment": "^2.18.1",
     "node-pg-migrate": "^2.10.0",
     "nodemailer": "^4.0.1",
     "pg-promise": "^5.6.4",
+    "prettier": "^1.8.2",
     "qs": "^6.5.1",
     "rejoice": "^4.0.0",
     "rimraf": "^2.6.1",
@@ -66,13 +70,21 @@
   "devDependencies": {
     "eslint": "^3.18.0",
     "eslint-config-airbnb": "^14.1.0",
+    "eslint-config-prettier": "^2.7.0",
     "eslint-plugin-babel": "^4.1.1",
     "eslint-plugin-flowtype": "^2.30.3",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-prettier": "^2.3.1",
     "eslint-plugin-react": "^6.10.3",
     "flow-bin": "^0.42.0",
     "flow-typed": "^2.0.0"
+  },
+  "lint-staged": {
+    "*.{js,json,css}": [
+      "prettier --write 'src/**/*.js'",
+      "git add"
+    ]
   },
   "jest": {
     "roots": [

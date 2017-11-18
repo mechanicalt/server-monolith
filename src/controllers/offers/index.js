@@ -18,45 +18,58 @@ import 'rpcServers';
 export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { applicationId, message } = request.payload;
-  return createTransaction(t => applicationsRepo.getInternshipFromApplication(applicationId, t)
-    .then((internship) => {
-      if (internship.userId !== userId) {
-        throw boom.unauthorized('You do not have permission to send offer');
-      }
-      return Promise.all([
-        repo.insert({
-          applicationId,
-          message,
-        },
-        undefined,
-        t),
-        applicationsRepo.retrieveOne({
-          id: applicationId,
-        }, undefined, t),
-        applicationsRepo.update({
-          id: applicationId,
-        },
-          {
-            status: statusTypes.OFFERED,
-          },
-        t),
-      ]).then(([id, application]) => {
-        rpcUsers.getUsers([application.userId])
-        .then((([user]) => {
-          rpcEmail.sendEmail(types.createOffer, {
-            to: user.email,
-            subject: 'You have been sent an offer',
-          },
+  return createTransaction(t =>
+    applicationsRepo
+      .getInternshipFromApplication(applicationId, t)
+      .then(internship => {
+        if (internship.userId !== userId) {
+          throw boom.unauthorized('You do not have permission to send offer');
+        }
+        return Promise.all([
+          repo.insert(
             {
-              internshipName: internship.name,
-              offerUrl: `${process.env.CLIENT_URL}/applications`,
-            });
-        }));
-        return id;
-      });
-    }))
-  .then(reply)
-  .catch(reply);
+              applicationId,
+              message,
+            },
+            undefined,
+            t
+          ),
+          applicationsRepo.retrieveOne(
+            {
+              id: applicationId,
+            },
+            undefined,
+            t
+          ),
+          applicationsRepo.update(
+            {
+              id: applicationId,
+            },
+            {
+              status: statusTypes.OFFERED,
+            },
+            t
+          ),
+        ]).then(([id, application]) => {
+          rpcUsers.getUsers([application.userId]).then(([user]) => {
+            rpcEmail.sendEmail(
+              types.createOffer,
+              {
+                to: user.email,
+                subject: 'You have been sent an offer',
+              },
+              {
+                internshipName: internship.name,
+                offerUrl: `${process.env.CLIENT_URL}/applications`,
+              }
+            );
+          });
+          return id;
+        });
+      })
+  )
+    .then(reply)
+    .catch(reply);
 }
 
 export const create = {
@@ -76,14 +89,18 @@ export const create = {
 export const byApplicationHandler = (request: *, reply: *) => {
   const { id: userId } = getUser(request);
   const { applicationId } = request.params;
-  return applicationsRepo.retrieveOne({
-    id: applicationId,
-    userId,
-  }).then(() => repo.retrieveOne({
-    applicationId,
-  }))
-  .then(reply)
-  .catch(reply);
+  return applicationsRepo
+    .retrieveOne({
+      id: applicationId,
+      userId,
+    })
+    .then(() =>
+      repo.retrieveOne({
+        applicationId,
+      })
+    )
+    .then(reply)
+    .catch(reply);
 };
 
 const byApplication = {
@@ -102,58 +119,85 @@ const byApplication = {
 export const acceptHandler = (request: *, reply: *) => {
   const { id: userId } = getUser(request);
   const { id } = request.params;
-  return repo.getApplicationFromOffer(id)
-  .then((application) => {
-    if (userId !== application.userId) {
-      throw boom.unauthorized('You do not have permission to accept this offer');
-    }
-    return internsRepo.retrieve({
-      internshipId: application.internshipId,
-      userId,
-      status: [internStatusTypes.ACTIVE, internStatusTypes.AWAITING_APPROVAL],
-    }).then((intern) => {
-      if (intern) {
-        throw boom.badRequest('You are already an active intern at this internship');
+  return repo
+    .getApplicationFromOffer(id)
+    .then(application => {
+      if (userId !== application.userId) {
+        throw boom.unauthorized(
+          'You do not have permission to accept this offer'
+        );
       }
-      return Promise.all([
-        internshipRepo.getInternshipWithUserId(application.internshipId)
-        .then(internship => rpcUsers.getUsers([userId, internship.userId])
-          .then(([user, owner]) => {
-            rpcEmail.sendEmail(types.acceptOffer, {
-              to: owner.email,
-              subject: 'Your offer has been accepted',
-            },
-              {
-                internshipName: internship.name,
-                username: user.username,
-                userEmail: user.email,
-              });
-            rpcEmail.sendEmail(types.acceptOfferIntern, {
-              to: user.email,
-              subject: `${internship.name} - Accepted Offer: Next Steps`,
-            },
-              {
-                internshipName: internship.name,
-                logHoursUrl: `${process.env.CLIENT_URL}/users/${user.id}`,
-              });
-          })),
-        applicationsRepo.update({
-          id: application.id,
-        }, {
-          status: statusTypes.OFFER_ACCEPTED,
-        }),
-        internsRepo.insert({
-          userId,
+      return internsRepo
+        .retrieve({
           internshipId: application.internshipId,
-          status: internStatusTypes.ACTIVE,
-          minutes: 0,
-        }),
-      ]);
-    });
-  })
-  .then(() => null)
-  .then(reply)
-  .catch(reply);
+          userId,
+          status: [
+            internStatusTypes.ACTIVE,
+            internStatusTypes.AWAITING_APPROVAL,
+          ],
+        })
+        .then(intern => {
+          if (intern) {
+            throw boom.badRequest(
+              'You are already an active intern at this internship'
+            );
+          }
+          return Promise.all([
+            internshipRepo
+              .getInternshipWithUserId(application.internshipId)
+              .then(internship =>
+                rpcUsers
+                  .getUsers([userId, internship.userId])
+                  .then(([user, owner]) => {
+                    rpcEmail.sendEmail(
+                      types.acceptOffer,
+                      {
+                        to: owner.email,
+                        subject: 'Your offer has been accepted',
+                      },
+                      {
+                        internshipName: internship.name,
+                        username: user.username,
+                        userEmail: user.email,
+                      }
+                    );
+                    rpcEmail.sendEmail(
+                      types.acceptOfferIntern,
+                      {
+                        to: user.email,
+                        subject: `${
+                          internship.name
+                        } - Accepted Offer: Next Steps`,
+                      },
+                      {
+                        internshipName: internship.name,
+                        logHoursUrl: `${process.env.CLIENT_URL}/users/${
+                          user.id
+                        }`,
+                      }
+                    );
+                  })
+              ),
+            applicationsRepo.update(
+              {
+                id: application.id,
+              },
+              {
+                status: statusTypes.OFFER_ACCEPTED,
+              }
+            ),
+            internsRepo.insert({
+              userId,
+              internshipId: application.internshipId,
+              status: internStatusTypes.ACTIVE,
+              minutes: 0,
+            }),
+          ]);
+        });
+    })
+    .then(() => null)
+    .then(reply)
+    .catch(reply);
 };
 
 const accept = {
@@ -172,33 +216,44 @@ const accept = {
 export const rejectHandler = (request: *, reply: *) => {
   const { id: userId } = getUser(request);
   const { id } = request.params;
-  return repo.getApplicationFromOffer(id)
-  .then((application) => {
-    if (userId !== application.userId) {
-      throw boom.unauthorized('You do not have permission to reject this offer');
-    }
-    return Promise.all([
-      applicationsRepo.update({
-        id: application.id,
-      }, {
-        status: statusTypes.OFFER_REJECTED,
-      }),
-      internshipRepo.getInternshipWithUserId(application.internshipId)
-      .then(internship => rpcUsers.getUsers([userId])
-        .then(([user]) => {
-          rpcEmail.sendEmail(types.rejectOffer, {
-            to: user.email,
-            subject: 'Your offer has been rejected',
+  return repo
+    .getApplicationFromOffer(id)
+    .then(application => {
+      if (userId !== application.userId) {
+        throw boom.unauthorized(
+          'You do not have permission to reject this offer'
+        );
+      }
+      return Promise.all([
+        applicationsRepo.update(
+          {
+            id: application.id,
           },
-            {
-              internshipName: internship.name,
-              username: user.username,
-            });
-        })),
-    ]);
-  })
-  .then(reply)
-  .catch(reply);
+          {
+            status: statusTypes.OFFER_REJECTED,
+          }
+        ),
+        internshipRepo
+          .getInternshipWithUserId(application.internshipId)
+          .then(internship =>
+            rpcUsers.getUsers([userId]).then(([user]) => {
+              rpcEmail.sendEmail(
+                types.rejectOffer,
+                {
+                  to: user.email,
+                  subject: 'Your offer has been rejected',
+                },
+                {
+                  internshipName: internship.name,
+                  username: user.username,
+                }
+              );
+            })
+          ),
+      ]);
+    })
+    .then(reply)
+    .catch(reply);
 };
 
 const reject = {
@@ -214,10 +269,4 @@ const reject = {
   },
 };
 
-
-export default controller('offers', [
-  create,
-  byApplication,
-  accept,
-  reject,
-]);
+export default controller('offers', [create, byApplication, accept, reject]);

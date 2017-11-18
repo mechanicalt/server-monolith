@@ -1,18 +1,21 @@
 // @flow
 import joi from 'joi';
 import controller from 'hapi-utils/controllers';
-import * as services from 'services/techs';
 import repo from 'repositories/techs';
 
 export function createHandler(request: *, reply: *) {
   const { name } = request.payload;
-  return repo.insert({
-    name,
-  }, {
-    justCreate: true,
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .insert(
+      {
+        name,
+      },
+      {
+        justCreate: true,
+      }
+    )
+    .then(reply)
+    .catch(reply);
 }
 
 export const create = {
@@ -28,6 +31,4 @@ export const create = {
   },
 };
 
-export default controller('techs', [
-  create,
-]);
+export default controller('techs', [create]);

@@ -5,12 +5,13 @@ import repo from 'repositories/points';
 
 export function byInternshipsHandler(request: *, reply: *) {
   const { ids } = request.payload;
-  return repo.getTotalPointsPerInternship(ids)
-  .then((totalPoints) => {
-    return totalPoints.map(p => ({ id: p.internshipId, points: p.points }));
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .getTotalPointsPerInternship(ids)
+    .then(totalPoints =>
+      totalPoints.map(p => ({ id: p.internshipId, points: p.points }))
+    )
+    .then(reply)
+    .catch(reply);
 }
 
 export const byInternships = {
@@ -21,12 +22,13 @@ export const byInternships = {
     auth: false,
     validate: {
       payload: {
-        ids: joi.array().items(joi.number().required()).required(),
+        ids: joi
+          .array()
+          .items(joi.number().required())
+          .required(),
       },
     },
   },
 };
 
-export default controller('points', [
-  byInternships,
-]);
+export default controller('points', [byInternships]);

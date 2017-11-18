@@ -11,18 +11,23 @@ import applications from 'controllers/applications';
 import offers from 'controllers/offers';
 import interns from 'controllers/interns';
 import points from 'controllers/points';
+import interactions from 'controllers/interactions';
 import userPlugin from 'app/users';
 import 'rpcServers';
 
-module.exports = getRegister([
-  ...points,
-  ...interns,
-  ...applications,
-  ...users,
-  ...sessions,
-  ...oauth,
-  ...projects,
-  ...internships,
-  ...techs,
-  ...offers,
-], [getPlugin(process.env.RPC_CONNECTION), userPlugin]);
+module.exports = getRegister(
+  [
+    ...interactions,
+    ...points,
+    ...interns,
+    ...applications,
+    ...users,
+    ...sessions,
+    ...oauth,
+    ...projects,
+    ...internships,
+    ...techs,
+    ...offers,
+  ],
+  [getPlugin(process.env.RPC_CONNECTION), userPlugin]
+);

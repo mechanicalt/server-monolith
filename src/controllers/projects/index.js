@@ -9,11 +9,12 @@ import { indexEndpoint } from 'utils/controller';
 
 export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
-  return repo.insert({
-    userId,
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .insert({
+      userId,
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 export const create = {
@@ -25,14 +26,16 @@ export const create = {
 export function editHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { id } = request.params;
-  return repo.update(
-    {
-      id,
-      userId,
-    },
-    request.payload)
-  .then(reply)
-  .catch(reply);
+  return repo
+    .update(
+      {
+        id,
+        userId,
+      },
+      request.payload
+    )
+    .then(reply)
+    .catch(reply);
 }
 
 export const edit = {
@@ -54,11 +57,12 @@ export const edit = {
 
 export function getHandler(request: *, reply: *) {
   const { id } = request.params;
-  return repo.retrieve({
-    id,
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .retrieve({
+      id,
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 export const get = {
@@ -77,11 +81,12 @@ export const get = {
 
 export function byUserHandler(request: *, reply: *) {
   const { id } = request.params;
-  return repo.retrieveAll({
-    userId: id,
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .retrieveAll({
+      userId: id,
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 export const byUser = {
@@ -101,8 +106,8 @@ export const byUser = {
 export function searchHandler(request: *, reply: *) {
   const { searchText } = request.payload;
   return (searchText ? repo.search(searchText) : repo.retrieveAll({}))
-  .then(reply)
-  .catch(reply);
+    .then(reply)
+    .catch(reply);
 }
 
 const search = {
@@ -113,7 +118,11 @@ const search = {
     auth: false,
     validate: {
       payload: {
-        searchText: joi.string().trim().allow('').required(),
+        searchText: joi
+          .string()
+          .trim()
+          .allow('')
+          .required(),
       },
     },
   },
@@ -122,19 +131,23 @@ const search = {
 export const delHandler = (request: *, reply: *) => {
   const { id: userId } = getUser(request);
   const { id } = request.params;
-  return internshipRepo.retrieveAll({
-    projectId: id,
-  }).then((internships) => {
-    if (internships.length) {
-      throw boom.badRequest('You need to delete all of this project\'s internships before deleting the project');
-    }
-    return repo.remove({
-      id,
-      userId,
-    });
-  })
-  .then(reply)
-  .catch(reply);
+  return internshipRepo
+    .retrieveAll({
+      projectId: id,
+    })
+    .then(internships => {
+      if (internships.length) {
+        throw boom.badRequest(
+          "You need to delete all of this project's internships before deleting the project"
+        );
+      }
+      return repo.remove({
+        id,
+        userId,
+      });
+    })
+    .then(reply)
+    .catch(reply);
 };
 
 const del = {

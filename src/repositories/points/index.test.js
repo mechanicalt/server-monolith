@@ -14,10 +14,11 @@ describe('points', () => {
         internshipId,
         points: 10,
       }),
-    ]).then(() => repo.getTotalPointsPerInternship([internshipId])
-      .then(internships => expect(internships[0].points).toEqual(10)));
+    ]).then(() =>
+      repo
+        .getTotalPointsPerInternship([internshipId])
+        .then(internships => expect(internships[0].points).toEqual(10))
+    );
   });
-  afterEach(() => Promise.all([
-    truncate('points'),
-  ]));
+  afterEach(() => Promise.all([truncate('points')]));
 });

@@ -1,5 +1,10 @@
 // @flow
-import { truncate, decorateRequestWithUser, mockReply, getId } from 'hapi-utils/tests';
+import {
+  truncate,
+  decorateRequestWithUser,
+  mockReply,
+  getId,
+} from 'hapi-utils/tests';
 import projectsRepo from 'repositories/projects';
 import internshipsRepo from 'repositories/internships';
 import repo from 'repositories/applications';
@@ -15,9 +20,12 @@ describe('applications', () => {
     const payload = {
       internshipId,
     };
-    const request = decorateRequestWithUser({
-      payload,
-    }, { id: userId });
+    const request = decorateRequestWithUser(
+      {
+        payload,
+      },
+      { id: userId }
+    );
     return Promise.all([
       internshipsRepo.insert({
         id: internshipId,
@@ -28,14 +36,23 @@ describe('applications', () => {
         id: projectId,
         userId: otherUserId,
       }),
-    ]).then(() => createHandler(request, mockReply)
-      .then(id => repo.retrieveOne({
-        id,
-      }).then(application => expect(application.internshipId).toBe(internshipId))));
+    ]).then(() =>
+      createHandler(request, mockReply).then(id =>
+        repo
+          .retrieveOne({
+            id,
+          })
+          .then(application =>
+            expect(application.internshipId).toBe(internshipId)
+          )
+      )
+    );
   });
-  afterEach(() => Promise.all([
-    truncate('projects'),
-    truncate('internships'),
-    truncate('applications'),
-  ]));
+  afterEach(() =>
+    Promise.all([
+      truncate('projects'),
+      truncate('internships'),
+      truncate('applications'),
+    ])
+  );
 });

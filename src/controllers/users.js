@@ -13,32 +13,41 @@ import * as sessionServices from '../services/sessions';
 export function createHandler(request: *, reply: *) {
   if (process.env.NODE_ENV === 'production') return reply();
   const { email, username } = request.payload;
-  return createTransaction(t => Promise.all([
-    services.doesEmailAlreadyExist(email, t),
-    services.doesUsernameAlreadyExist(username, t),
-  ])
-    .then(() => {
-      const emailToken = crypto.randomBytes(20).toString('hex');
-      const loginToken = crypto.randomBytes(20).toString('hex');
-      return Promise.all([services.create({ username, email, loginToken, emailToken }, t), emailToken]);
-    })
-    .then(([id, emailToken]) => {
-      rpc.createUser({
-        username,
-        email,
-      }, `${process.env.BASE_URL}/users/${id}/confirm_email/${emailToken}`);
-      return sessionServices.create({ username, id })
-      .then((token) => {
-        reply({
-          user: { id },
-          session: token,
+  return createTransaction(t =>
+    Promise.all([
+      services.doesEmailAlreadyExist(email, t),
+      services.doesUsernameAlreadyExist(username, t),
+    ])
+      .then(() => {
+        const emailToken = crypto.randomBytes(20).toString('hex');
+        const loginToken = crypto.randomBytes(20).toString('hex');
+        return Promise.all([
+          services.create({ username, email, loginToken, emailToken }, t),
+          emailToken,
+        ]);
+      })
+      .then(([id, emailToken]) => {
+        rpc.createUser(
+          {
+            username,
+            email,
+          },
+          `${process.env.BASE_URL}/users/${id}/confirm_email/${emailToken}`
+        );
+        return sessionServices.create({ username, id }).then(token => {
+          reply({
+            user: { id },
+            session: token,
+          });
         });
-      });
-    }))
-  .catch(reply);
+      })
+  ).catch(reply);
 }
 
-const joiUsername = joi.string().regex(/^[a-z0-9 -]*$/i).required();
+const joiUsername = joi
+  .string()
+  .regex(/^[a-z0-9 -]*$/i)
+  .required();
 
 export const create = {
   method: 'POST',
@@ -49,7 +58,10 @@ export const create = {
     validate: {
       payload: {
         username: joiUsername,
-        email: joi.string().email().required(),
+        email: joi
+          .string()
+          .email()
+          .required(),
       },
     },
   },
@@ -57,12 +69,15 @@ export const create = {
 
 export const updateHandler = (request: *, reply: *) => {
   const { id } = getUser(request);
-  return repo.update({
-    id,
-  },
-  request.payload)
-  .then(reply)
-  .catch(reply);
+  return repo
+    .update(
+      {
+        id,
+      },
+      request.payload
+    )
+    .then(reply)
+    .catch(reply);
 };
 
 export const update = {
@@ -78,7 +93,11 @@ export const update = {
   },
 };
 
-export const getUsersHandler = (request: *, reply: *) => services.getUsers(request.payload.userIds).then(reply).catch(reply);
+export const getUsersHandler = (request: *, reply: *) =>
+  services
+    .getUsers(request.payload.userIds)
+    .then(reply)
+    .catch(reply);
 
 export const getUsers = {
   method: 'POST',
@@ -91,13 +110,20 @@ export const getUsers = {
     },
     validate: {
       payload: {
-        userIds: joi.array().items(joi.number().required()).required(),
+        userIds: joi
+          .array()
+          .items(joi.number().required())
+          .required(),
       },
     },
   },
 };
 
-export const getHandler = (request: *, reply: *) => services.get(request.params.id).then(reply).catch(reply);
+export const getHandler = (request: *, reply: *) =>
+  services
+    .get(request.params.id)
+    .then(reply)
+    .catch(reply);
 
 export const get = {
   method: 'GET',
@@ -117,8 +143,10 @@ export const get = {
 
 export function checkUsernameHandler(request: *, reply: *) {
   const { username } = request.payload;
-  return services.doesUsernameAlreadyExist(username).then(() => reply(false))
-  .catch(() => reply(true));
+  return services
+    .doesUsernameAlreadyExist(username)
+    .then(() => reply(false))
+    .catch(() => reply(true));
 }
 
 export const checkUsername = {
@@ -137,8 +165,10 @@ export const checkUsername = {
 
 export function checkEmailHandler(request: *, reply: *) {
   const { email } = request.payload;
-  return services.doesEmailAlreadyExist(email).then(() => reply(false))
-  .catch(() => reply(true));
+  return services
+    .doesEmailAlreadyExist(email)
+    .then(() => reply(false))
+    .catch(() => reply(true));
 }
 
 export const checkEmail = {
@@ -149,7 +179,10 @@ export const checkEmail = {
     auth: false,
     validate: {
       payload: {
-        email: joi.string().email().required(),
+        email: joi
+          .string()
+          .email()
+          .required(),
       },
     },
   },
@@ -157,9 +190,10 @@ export const checkEmail = {
 
 export function confirmEmailHandler(request: *, reply: *) {
   const { id, token } = request.params;
-  return services.confirmEmail(id, token)
-  .then(() => reply().redirect(flash('confirmEmail')))
-  .catch(() => reply().redirect(flash('confirmEmail', true)));
+  return services
+    .confirmEmail(id, token)
+    .then(() => reply().redirect(flash('confirmEmail')))
+    .catch(() => reply().redirect(flash('confirmEmail', true)));
 }
 
 export const confirmEmail = {
@@ -179,9 +213,10 @@ export const confirmEmail = {
 
 export function loginTokenHandler(request: *, reply: *) {
   const { email } = request.params;
-  return services.getLoginToken(email)
-  .then(reply)
-  .catch(reply);
+  return services
+    .getLoginToken(email)
+    .then(reply)
+    .catch(reply);
 }
 
 export const loginToken = {
@@ -201,8 +236,8 @@ export const loginToken = {
 export function searchHandler(request: *, reply: *) {
   const { searchText } = request.payload;
   return (searchText ? repo.search(searchText) : repo.retrieveAll({}))
-  .then(reply)
-  .catch(reply);
+    .then(reply)
+    .catch(reply);
 }
 
 const search = {
@@ -213,7 +248,11 @@ const search = {
     auth: false,
     validate: {
       payload: {
-        searchText: joi.string().trim().allow('').required(),
+        searchText: joi
+          .string()
+          .trim()
+          .allow('')
+          .required(),
       },
     },
   },

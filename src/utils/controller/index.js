@@ -5,11 +5,12 @@ import Repo from 'hapi-utils/repos';
 export function indexEndpoint(repo: Repo<*>) {
   function indexHandler(request: *, reply: *) {
     const { ids } = request.payload;
-    return repo.retrieveAll({
-      id: ids,
-    })
-    .then(reply)
-    .catch(reply);
+    return repo
+      .retrieveAll({
+        id: ids,
+      })
+      .then(reply)
+      .catch(reply);
   }
   return {
     method: 'POST',
@@ -19,7 +20,10 @@ export function indexEndpoint(repo: Repo<*>) {
       auth: false,
       validate: {
         payload: {
-          ids: joi.array().items(joi.number().required()).required(),
+          ids: joi
+            .array()
+            .items(joi.number().required())
+            .required(),
         },
       },
     },

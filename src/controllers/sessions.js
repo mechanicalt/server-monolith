@@ -7,9 +7,10 @@ import { getTokenFromHeaders, getUserFromAuth } from 'utils/sessions';
 export function createHandler(request: Object, reply: Function) {
   const { email, loginToken } = request.payload;
   return loginWithToken({ email, loginToken })
-  .then(({ token, user }) => {
-    reply({ token, user });
-  }).catch(reply);
+    .then(({ token, user }) => {
+      reply({ token, user });
+    })
+    .catch(reply);
 }
 
 const create = {
@@ -18,7 +19,10 @@ const create = {
   config: {
     validate: {
       payload: {
-        email: joi.string().email().required(),
+        email: joi
+          .string()
+          .email()
+          .required(),
         loginToken: joi.string().required(),
       },
     },

@@ -7,12 +7,11 @@
     "browser": true
   },
   "extends": [
-    "airbnb",
-    "plugin:flowtype/recommended"
+    "plugin:flowtype/recommended",
+    "prettier"
   ],
   "parser": "babel-eslint",
   "rules": {
-    "quotes": [2, "single"],
     "strict": [2, "never"],
     "babel/generator-star-spacing": 1,
     "babel/object-shorthand": 1,
@@ -32,14 +31,12 @@
     "react/no-multi-comp": 0,
     "react/prefer-stateless-function": 0,
     "no-param-reassign": 0,
-    "import/prefer-default-export": 0,
-    "indent": ["warn"],
-    "arrow-body-style": ["warn"] 
+    "import/prefer-default-export": 0
   },
   "plugins": [
     "babel",
-    "react",
-    "flowtype"
+    "flowtype",
+    "prettier"
   ],
   "globals": {
       "describe": false,

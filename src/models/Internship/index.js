@@ -12,10 +12,11 @@ export default class Internship {
   projectId: $$id;
   status: number;
   constructor(internship: Object = {}) {
-    ['id', 'name', 'description', 'projectId', 'status', 'createdAt'].forEach((key) => {
-      this[key] = internship[key];
-    });
+    ['id', 'name', 'description', 'projectId', 'status', 'createdAt'].forEach(
+      key => {
+        this[key] = internship[key];
+      }
+    );
   }
-  isActive = () => this.status === statusTypes.ACTIVE
+  isActive = () => this.status === statusTypes.ACTIVE;
 }
-

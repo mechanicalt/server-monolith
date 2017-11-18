@@ -16,7 +16,15 @@ export default class Intern {
   createdAt: Date;
   updateAt: Date;
   constructor(application?: Object = {}) {
-    ['id', 'userId', 'internshipId', 'status', 'minutes', 'createdAt', 'updatedAt'].forEach((key) => {
+    [
+      'id',
+      'userId',
+      'internshipId',
+      'status',
+      'minutes',
+      'createdAt',
+      'updatedAt',
+    ].forEach(key => {
       // $FlowFixMe
       this[key] = application[key];
     });

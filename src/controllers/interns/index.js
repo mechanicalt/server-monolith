@@ -25,9 +25,7 @@ export function byInternshipHandler(request: *, reply: *) {
       internshipId,
     });
   }
-  return results
-  .then(reply)
-  .catch(reply);
+  return results.then(reply).catch(reply);
 }
 
 export const byInternship = {
@@ -45,11 +43,12 @@ export const byInternship = {
 
 export function getByUserHandler(request: *, reply: *) {
   const { userId } = request.params;
-  return repo.retrieveAll({
-    userId,
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .retrieveAll({
+      userId,
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 const getByUser = {
@@ -69,12 +68,13 @@ const getByUser = {
 export function getByInternshipHandler(request: *, reply: *) {
   const { internshipId } = request.params;
   const { status } = request.payload;
-  return repo.retrieveAll({
-    internshipId,
-    status,
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .retrieveAll({
+      internshipId,
+      status,
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 const getByInternship = {
@@ -88,7 +88,10 @@ const getByInternship = {
         internshipId: joi.string().required(),
       },
       payload: {
-        status: joi.array().items(joi.number().optional()).optional(),
+        status: joi
+          .array()
+          .items(joi.number().optional())
+          .optional(),
       },
     },
   },
@@ -98,38 +101,51 @@ export function statusHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { id } = request.params;
   const { status } = request.payload;
-  return repo.getInternshipFromIntern(id)
-  .then((internship) => {
-    if (internship.userId !== userId) {
-      throw boom.unauthorized('You do not have permission to change the status of this intern');
-    }
-    let template;
-    if (status === statusTypes.FIRED) {
-      template = types.internFired;
-    } else {
-      template = types.internCompleted;
-    }
-    repo.retrieveOne({
-      id,
-    }).then(intern => rpcUsers.getUsers([
-      userId,
-      intern.userId,
-    ]).then(([owner, internUser]) => rpcEmails.sendEmail(template, {
-      to: internUser.email,
-    }, {
-      username: owner.username,
-      internshipName: internship.name,
-    })));
-    return repo.update({
-      id,
-    },
-      {
-        status,
-      },
-    );
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .getInternshipFromIntern(id)
+    .then(internship => {
+      if (internship.userId !== userId) {
+        throw boom.unauthorized(
+          'You do not have permission to change the status of this intern'
+        );
+      }
+      let template;
+      if (status === statusTypes.FIRED) {
+        template = types.internFired;
+      } else {
+        template = types.internCompleted;
+      }
+      repo
+        .retrieveOne({
+          id,
+        })
+        .then(intern =>
+          rpcUsers
+            .getUsers([userId, intern.userId])
+            .then(([owner, internUser]) =>
+              rpcEmails.sendEmail(
+                template,
+                {
+                  to: internUser.email,
+                },
+                {
+                  username: owner.username,
+                  internshipName: internship.name,
+                }
+              )
+            )
+        );
+      return repo.update(
+        {
+          id,
+        },
+        {
+          status,
+        }
+      );
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 export const status = {
@@ -152,40 +168,60 @@ export function logMinutesHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { id } = request.params;
   const { minutes } = request.payload;
-  return repo.retrieveOne({
-    id,
-    userId,
-  }).then((intern) => {
-    if (!intern) {
-      throw boom.unauthorized('You do not have permission to log minutes for this intern');
-    }
-    const totalMinutes = intern.minutes + minutes;
-    const internshipHoursComplete = totalMinutes >= 2400;
-    if (internshipHoursComplete) {
-      internshipRepo.getInternshipWithUserId(intern.internshipId)
-      .then(internship => rpcUsers.getUsers([
-        userId,
-        internship.userId,
-      ]).then(([internUser, owner]) => rpcEmails.sendEmail(types.internAwaitingApproval, {
-        to: owner.email,
-        subject: `${internUser.username} has completed their intern hours`,
-      }, {
-        username: internUser.username,
-        internshipName: internship.name,
-        approveUserUrl: `${process.env.CLIENT_URL}/internships/${internship.id}`,
-      })));
-    }
-    return repo.update({
+  return repo
+    .retrieveOne({
       id,
       userId,
-    },
-      {
-        minutes: totalMinutes,
-        status: internshipHoursComplete ? statusTypes.AWAITING_APPROVAL : intern.status,
-      });
-  })
-  .then(reply)
-  .catch(reply);
+    })
+    .then(intern => {
+      if (!intern) {
+        throw boom.unauthorized(
+          'You do not have permission to log minutes for this intern'
+        );
+      }
+      const totalMinutes = intern.minutes + minutes;
+      const internshipHoursComplete = totalMinutes >= 2400;
+      if (internshipHoursComplete) {
+        internshipRepo
+          .getInternshipWithUserId(intern.internshipId)
+          .then(internship =>
+            rpcUsers
+              .getUsers([userId, internship.userId])
+              .then(([internUser, owner]) =>
+                rpcEmails.sendEmail(
+                  types.internAwaitingApproval,
+                  {
+                    to: owner.email,
+                    subject: `${
+                      internUser.username
+                    } has completed their intern hours`,
+                  },
+                  {
+                    username: internUser.username,
+                    internshipName: internship.name,
+                    approveUserUrl: `${process.env.CLIENT_URL}/internships/${
+                      internship.id
+                    }`,
+                  }
+                )
+              )
+          );
+      }
+      return repo.update(
+        {
+          id,
+          userId,
+        },
+        {
+          minutes: totalMinutes,
+          status: internshipHoursComplete
+            ? statusTypes.AWAITING_APPROVAL
+            : intern.status,
+        }
+      );
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 export const logMinutes = {

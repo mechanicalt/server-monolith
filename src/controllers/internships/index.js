@@ -7,17 +7,19 @@ import * as projectServices from 'services/projects';
 import repo from 'repositories/internships';
 import internsRepo from 'repositories/interns';
 import { indexEndpoint } from 'utils/controller';
-import { statusTypes } from 'models/Internship';
 
 export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { projectId } = request.payload;
-  return projectServices.doesUserOwnProject(userId, projectId)
-  .then(() => repo.insert({
-    projectId,
-  }))
-  .then(reply)
-  .catch(reply);
+  return projectServices
+    .doesUserOwnProject(userId, projectId)
+    .then(() =>
+      repo.insert({
+        projectId,
+      })
+    )
+    .then(reply)
+    .catch(reply);
 }
 
 export const create = {
@@ -36,15 +38,21 @@ export const create = {
 export const updateHandler = (request: *, reply: Function) => {
   const user = getUser(request);
   const { id } = request.params;
-  return repo.retrieveOne({ id })
-  .then(internship => projectServices.doesUserOwnProject(user.id, internship.projectId))
-  .then(() => repo.update({
-    id,
-  },
-      request.payload,
-    ))
-  .then(reply)
-  .catch(reply);
+  return repo
+    .retrieveOne({ id })
+    .then(internship =>
+      projectServices.doesUserOwnProject(user.id, internship.projectId)
+    )
+    .then(() =>
+      repo.update(
+        {
+          id,
+        },
+        request.payload
+      )
+    )
+    .then(reply)
+    .catch(reply);
 };
 
 const update = {
@@ -65,12 +73,12 @@ const update = {
   },
 };
 
-
 export function byUserHandler(request: *, reply: *) {
   const { id } = request.params;
-  return repo.byUser(id)
-  .then(reply)
-  .catch(reply);
+  return repo
+    .byUser(id)
+    .then(reply)
+    .catch(reply);
 }
 
 export const byUser = {
@@ -90,12 +98,13 @@ export const byUser = {
 export function getByProjectHandler(request: *, reply: *) {
   const { id } = request.params;
   const { status } = request.payload;
-  return repo.retrieveAll({
-    projectId: id,
-    status,
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .retrieveAll({
+      projectId: id,
+      status,
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 export const getByProject = {
@@ -109,7 +118,10 @@ export const getByProject = {
         id: joi.string().required(),
       },
       payload: {
-        status: joi.array().items(joi.number().required()).required(),
+        status: joi
+          .array()
+          .items(joi.number().required())
+          .required(),
       },
     },
   },
@@ -117,9 +129,10 @@ export const getByProject = {
 
 export function getHandler(request: *, reply: *) {
   const { id } = request.params;
-  return repo.retrieveOne({ id })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .retrieveOne({ id })
+    .then(reply)
+    .catch(reply);
 }
 
 const get = {
@@ -139,8 +152,8 @@ const get = {
 export function searchHandler(request: *, reply: *) {
   const { searchText } = request.payload;
   return (searchText ? repo.search(searchText) : repo.mostRelevant())
-  .then(reply)
-  .catch(reply);
+    .then(reply)
+    .catch(reply);
 }
 const search = {
   method: 'POST',
@@ -150,7 +163,11 @@ const search = {
     auth: false,
     validate: {
       payload: {
-        searchText: joi.string().trim().allow('').required(),
+        searchText: joi
+          .string()
+          .trim()
+          .allow('')
+          .required(),
       },
     },
   },
@@ -159,25 +176,30 @@ const search = {
 export const delHandler = (request: *, reply: *) => {
   const { id: userId } = getUser(request);
   const { id } = request.params;
-  return repo.getInternshipWithUserId(id)
-  .then((internship) => {
-    if (userId !== internship.userId) {
-      throw boom.unauthorized('You do not have permission to delete this internship');
-    }
-    return internsRepo.retrieveAll({
-      internshipId: id,
-    });
-  })
-  .then((interns) => {
-    if (interns.length) {
-      throw boom.badRequest('You cannot delete internships which have had atleast a single intern');
-    }
-    return repo.remove({
-      id,
-    });
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .getInternshipWithUserId(id)
+    .then(internship => {
+      if (userId !== internship.userId) {
+        throw boom.unauthorized(
+          'You do not have permission to delete this internship'
+        );
+      }
+      return internsRepo.retrieveAll({
+        internshipId: id,
+      });
+    })
+    .then(interns => {
+      if (interns.length) {
+        throw boom.badRequest(
+          'You cannot delete internships which have had atleast a single intern'
+        );
+      }
+      return repo.remove({
+        id,
+      });
+    })
+    .then(reply)
+    .catch(reply);
 };
 
 const del = {

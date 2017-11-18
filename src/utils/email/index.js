@@ -10,7 +10,12 @@ Handlebars.registerPartial('layout', layoutPartial);
 
 const defaultFrom = 'noreply@menternship.org';
 
-const { SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_PORT = 587 } = process.env;
+const {
+  SMTP_HOST,
+  SMTP_USERNAME,
+  SMTP_PASSWORD,
+  SMTP_PORT = 587,
+} = process.env;
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
   port: SMTP_PORT,
@@ -22,7 +27,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // verify connection configuration
-transporter.verify((error) => {
+transporter.verify(error => {
   if (error) {
     console.log(error);
     throw Error();
@@ -60,18 +65,22 @@ export class Email {
       },
       transport: transporter,
     });
-    return template.send({
-      template: this.templateName,
-      message: {
-        from: defaultFrom,
-        subject: 'Message from menternship',
-        ...this.emailProps,
-      },
-      locals: this.templateProps,
-    })
-    .catch(console.log);
-  }
+    return template
+      .send({
+        template: this.templateName,
+        message: {
+          from: defaultFrom,
+          subject: 'Message from menternship',
+          ...this.emailProps,
+        },
+        locals: this.templateProps,
+      })
+      .catch(console.log);
+  };
 }
 
-export default (notifications: Email[]) => Promise.all(notifications.map(notification => notification.prepare())).catch(console.log);
+export default (notifications: Email[]) =>
+  Promise.all(notifications.map(notification => notification.prepare())).catch(
+    console.log
+  );
 /* eslint-enable no-console */

@@ -14,13 +14,22 @@ jest.mock('repositories/internships', () => ({
 const noopResp = resp => resp;
 
 describe('projects', () => {
-  beforeEach(() => projectRepo.insert({
-    userId: 1,
-    id: 1,
-  }));
-  it('createHandler', () => c.createHandler({ payload: {
-    projectId: 1,
-  } }, noopResp)
-    .then(id => expect(id).toBe(22)));
+  beforeEach(() =>
+    projectRepo.insert({
+      userId: 1,
+      id: 1,
+    })
+  );
+  it('createHandler', () =>
+    c
+      .createHandler(
+        {
+          payload: {
+            projectId: 1,
+          },
+        },
+        noopResp
+      )
+      .then(id => expect(id).toBe(22)));
   afterEach(() => truncate('projects'));
 });

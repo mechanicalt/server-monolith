@@ -25,9 +25,7 @@ export function byInternshipHandler(request: *, reply: *) {
       internshipId,
     });
   }
-  return results
-  .then(reply)
-  .catch(reply);
+  return results.then(reply).catch(reply);
 }
 
 export const byInternship = {
@@ -45,11 +43,12 @@ export const byInternship = {
 
 export function indexHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
-  return repo.retrieveAll({
-    userId,
-  })
-  .then(reply)
-  .catch(reply);
+  return repo
+    .retrieveAll({
+      userId,
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 export const index = {
@@ -62,43 +61,56 @@ export function createHandler(request: *, reply: *) {
   const { id: userId } = getUser(request);
   const { internshipId } = request.payload;
   return Promise.all([
-    internshipRepo.getInternshipWithUserId(internshipId).then((internship) => {
+    internshipRepo.getInternshipWithUserId(internshipId).then(internship => {
       if (internship.userId === userId) {
         throw boom.badRequest('You cannot apply to your own internship');
       }
       return internship;
     }),
-    internshipRepo.retrieveOne({
-      id: internshipId,
-    }).then((internship) => {
-      if (!internship.isActive()) {
-        throw boom.badRequest('Internship is not Active');
-      }
-    }),
-    repo.retrieve({
-      internshipId,
-      status: [statusTypes.PENDING, statusTypes.OFFERED],
-    }).then((application) => {
-      if (application) {
-        throw boom.badRequest('You have already applied for this internship');
-      }
-    }),
-  ]).then(([internship]) => {
-    rpcUsers.getUsers([userId, internship.userId]).then(([applicant, owner]) => rpcEmail.sendEmail(types.createApplication,
-        { to: owner.email, subject: 'Menternship - New Applicant' },
-      {
-        username: applicant.username,
-        internshipName: internship.name,
-        internshipApplicationsUrl: `${process.env.CLIENT_URL}/applicants/${internship.id}`,
-      }));
-    return repo.insert({
-      userId,
-      internshipId,
-      status: statusTypes.PENDING,
-    });
-  })
-  .then(reply)
-  .catch(reply);
+    internshipRepo
+      .retrieveOne({
+        id: internshipId,
+      })
+      .then(internship => {
+        if (!internship.isActive()) {
+          throw boom.badRequest('Internship is not Active');
+        }
+      }),
+    repo
+      .retrieve({
+        internshipId,
+        status: [statusTypes.PENDING, statusTypes.OFFERED],
+      })
+      .then(application => {
+        if (application) {
+          throw boom.badRequest('You have already applied for this internship');
+        }
+      }),
+  ])
+    .then(([internship]) => {
+      rpcUsers
+        .getUsers([userId, internship.userId])
+        .then(([applicant, owner]) =>
+          rpcEmail.sendEmail(
+            types.createApplication,
+            { to: owner.email, subject: 'Menternship - New Applicant' },
+            {
+              username: applicant.username,
+              internshipName: internship.name,
+              internshipApplicationsUrl: `${
+                process.env.CLIENT_URL
+              }/applicants/${internship.id}`,
+            }
+          )
+        );
+      return repo.insert({
+        userId,
+        internshipId,
+        status: statusTypes.PENDING,
+      });
+    })
+    .then(reply)
+    .catch(reply);
 }
 
 export const create = {
@@ -114,8 +126,4 @@ export const create = {
   },
 };
 
-export default controller('applications', [
-  create,
-  byInternship,
-  index,
-]);
+export default controller('applications', [create, byInternship, index]);
