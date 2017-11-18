@@ -16,6 +16,7 @@
     "flowtyped": "flow-typed",
     "migrate": "pg-migrate",
     "test-migrate": "pg-migrate -d TEST_DATABASE_URL",
+    "precommit": "lint-staged",
     "pretty": "prettier --write 'src/**/*.js'"
   },
   "author": "",
@@ -81,7 +82,7 @@
     "flow-typed": "^2.0.0"
   },
   "lint-staged": {
-    "*.{js,json,css}": [
+    "*.{js,css}": [
       "prettier --write 'src/**/*.js'",
       "git add"
     ]
