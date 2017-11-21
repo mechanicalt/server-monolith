@@ -13,6 +13,7 @@ import interns from 'controllers/interns';
 import points from 'controllers/points';
 import interactions from 'controllers/interactions';
 import userPlugin from 'app/users';
+import internshipPlugin from 'app/internships';
 import 'rpcServers';
 
 module.exports = getRegister(
@@ -29,5 +30,5 @@ module.exports = getRegister(
     ...techs,
     ...offers,
   ],
-  [getPlugin(process.env.RPC_CONNECTION), userPlugin]
+  [getPlugin(process.env.RPC_CONNECTION), userPlugin, internshipPlugin]
 );
