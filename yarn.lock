@@ -4027,9 +4027,9 @@ mensch@^0.3.3:
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/mensch/-/mensch-0.3.3.tgz#e200ff4dd823717f8e0563b32e3f5481fca262b2"
 
-menternship-utils-hapi@^1.0.11:
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/menternship-utils-hapi/-/menternship-utils-hapi-1.0.11.tgz#4de06b07446878bd5284000f9700b6f3735d30cb"
+menternship-utils-hapi@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/menternship-utils-hapi/-/menternship-utils-hapi-1.0.12.tgz#ff76830fe8d5105faf2d44b0395adcac8bcd690a"
   dependencies:
     amqplib "^0.5.1"
     bcryptjs "^2.4.3"
