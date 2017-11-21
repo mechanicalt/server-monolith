@@ -1,6 +1,7 @@
 // @flow
 import joi from 'joi';
 import boom from 'boom';
+import { squel } from 'hapi-utils/repos';
 import controller from 'hapi-utils/controllers';
 import { getUser } from 'hapi-utils/request';
 import * as projectServices from 'services/projects';
@@ -19,6 +20,7 @@ export function createHandler(request: *, reply: *) {
         projectId,
         status: statusTypes.ACTIVE,
         remote: true,
+        postedAt: squel.str('NOW()'),
       })
     )
     .then(reply)
@@ -41,6 +43,9 @@ export const create = {
 export const updateHandler = (request: *, reply: Function) => {
   const user = getUser(request);
   const { id } = request.params;
+  if (request.payload.status && request.payload.status === statusTypes.ACTIVE) {
+    request.payload.postedAt = squel.str('NOW()');
+  }
   return repo
     .retrieveOne({ id })
     .then(internship =>

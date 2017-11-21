@@ -62,6 +62,18 @@ class InternshipRepo extends Repo {
     const { text, values } = query.toParam();
     return db.manyOrNone(text, values);
   };
+  getExpiredPostedAt = () => {
+    const query = squel
+      .select()
+      .field('*')
+      .from('internships')
+      .where('status = ?', statusTypes.ACTIVE)
+      .where(
+        "COALESCE(posted_at, NOW() - interval '11 days') < (NOW() - interval '10 days')"
+      );
+    const { text, values } = query.toParam();
+    return db.manyOrNone(text, values);
+  };
 }
 
 export default new InternshipRepo('internships', Internship);
