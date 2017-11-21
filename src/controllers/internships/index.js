@@ -6,6 +6,7 @@ import { getUser } from 'hapi-utils/request';
 import * as projectServices from 'services/projects';
 import repo from 'repositories/internships';
 import internsRepo from 'repositories/interns';
+import { statusTypes } from 'models/Internship';
 import { indexEndpoint } from 'utils/controller';
 
 export function createHandler(request: *, reply: *) {
@@ -16,6 +17,8 @@ export function createHandler(request: *, reply: *) {
     .then(() =>
       repo.insert({
         projectId,
+        status: statusTypes.ACTIVE,
+        remote: true,
       })
     )
     .then(reply)
@@ -67,6 +70,8 @@ const update = {
       payload: {
         name: joi.string().optional(),
         description: joi.string().optional(),
+        remote: joi.boolean().optional(),
+        location: joi.string().optional(),
         status: joi.number().optional(),
       },
     },
