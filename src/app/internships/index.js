@@ -5,14 +5,16 @@ import { squel } from 'hapi-utils/repos';
 
 export const onTick = () => {
   return repo.getExpiredPostedAt().then(internships => {
-    return repo.update(
-      {
-        id: internships.map(i => i.id),
-      },
-      {
-        postedAt: squel.str('NOW()'),
-      }
-    );
+    if (internships.length) {
+      return repo.update(
+        {
+          id: internships.map(i => i.id),
+        },
+        {
+          postedAt: squel.str('NOW()'),
+        }
+      );
+    }
   });
 };
 
