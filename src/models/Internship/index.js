@@ -21,6 +21,7 @@ export default class Internship {
       'createdAt',
       'location',
       'remote',
+      'postedAt',
     ].forEach(key => {
       this[key] = internship[key];
     });
