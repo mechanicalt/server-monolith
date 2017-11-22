@@ -1,6 +1,5 @@
 // @flow
 import Repo, { db, squel } from 'hapi-utils/repos';
-import Intern from 'models/Intern';
 
 class InternRepo extends Repo {
   getInternshipFromIntern = internId => {
@@ -17,4 +16,4 @@ class InternRepo extends Repo {
   };
 }
 
-export default new InternRepo('interns', Intern);
+export default new InternRepo('data', undefined, { justCreate: true });
